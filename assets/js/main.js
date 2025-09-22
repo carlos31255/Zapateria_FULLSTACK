@@ -1,5 +1,8 @@
-// Funcionalidades principales del sitio web
+// Funcionalidades generales del sitio
 document.addEventListener('DOMContentLoaded', function() {
+    // Actualizar la UI según el estado de autenticación
+    updateAuthUI();
+    
     // Actualizar contador del carrito
     updateCartCount();
     
@@ -12,26 +15,57 @@ document.addEventListener('DOMContentLoaded', function() {
             navMenu.classList.toggle('active');
         });
     }
-        
+    
+    // Configurar el dropdown del usuario
+    const userMenuBtn = document.querySelector('.user-menu-btn');
+    if (userMenuBtn) {
+        userMenuBtn.addEventListener('click', function() {
+            document.querySelector('.user-dropdown').classList.toggle('active');
+        });
+    }
+    
     //Cargar productos destacados
     if (document.getElementById('featured-products')) {
         loadFeaturedProducts();
     }
 });
 
-//Validar mail
+// Actualizar la UI según el estado de autenticación
+function updateAuthUI() {
+    const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
+    const menuUsuario = document.getElementById('user-menu');
+    const botonLogin = document.getElementById('login-btn');
+    const nombreUsuario = document.getElementById('user-name');
+    
+    if (usuarioActual && usuarioActual.logueado) {
+        if (menuUsuario) menuUsuario.style.display = 'block';
+        if (botonLogin) botonLogin.style.display = 'none';
+        if (nombreUsuario) nombreUsuario.textContent = usuarioActual.nombre;
+    } else {
+        if (menuUsuario) menuUsuario.style.display = 'none';
+        if (botonLogin) botonLogin.style.display = 'block';
+    }
+}
+
+// Actualizar contador del carrito
+function updateCartCount() {
+    const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    const totalItems = carrito.reduce((total, item) => total + item.cantidad, 0);
+    document.querySelectorAll('.cart-count').forEach(el => {
+        el.textContent = totalItems;
+    });
+}
+
+// Función para validar email
 function validateEmail(email) {
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
 }
 
-// Actualizar contador del carrito
-function updateCartCount() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
-    document.querySelectorAll('.cart-count').forEach(el => {
-        el.textContent = totalItems;
-    });
+// Función para cerrar sesión
+function logout() {
+    localStorage.removeItem('usuarioActual');
+    window.location.href = 'index.html';
 }
 
 // Cargar productos destacados
@@ -79,35 +113,35 @@ function loadFeaturedProducts() {
     document.querySelectorAll('.add-to-cart').forEach(button => {
         button.addEventListener('click', function() {
             const id = this.dataset.id;
-            const name = this.dataset.name;
-            const price = parseInt(this.dataset.price);
-            addToCart(id, name, price);
+            const nombre = this.dataset.name;
+            const precio = parseInt(this.dataset.price);
+            addToCart(id, nombre, precio);
         });
     });
 }
 
 // Añadir producto al carrito
-function addToCart(id, name, price) {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+function addToCart(id, nombre, precio) {
+    let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
     
     // Verificar si el producto ya está en el carrito
-    const existingItem = cart.find(item => item.id === id);
+    const itemExistente = carrito.find(item => item.id === id);
     
-    if (existingItem) {
-        existingItem.quantity += 1;
+    if (itemExistente) {
+        itemExistente.cantidad += 1;
     } else {
-        cart.push({
+        carrito.push({
             id,
-            name,
-            price,
-            quantity: 1,
-            image: `https://images.unsplash.com/photo-1560769629-975ec94e6a86?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`
+            nombre,
+            precio,
+            cantidad: 1,
+            imagen: `https://images.unsplash.com/photo-1560769629-975ec94e6a86?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`
         });
     }
     
-    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem('carrito', JSON.stringify(carrito));
     updateCartCount();
     
     // Mostrar mensaje de confirmación
-    alert(`¡${name} añadido al carrito!`);
+    alert(`¡${nombre} añadido al carrito!`);
 }
