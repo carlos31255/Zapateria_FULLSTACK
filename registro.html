@@ -31,27 +31,57 @@
             
             <form id="register-form">
                 <div class="form-group">
-                    <label for="register-name">Nombre completo</label>
-                    <input type="text" id="register-name" required>
-                    <div class="error-message" id="register-name-error"></div>
+                    <label for="registro-run">RUT</label>
+                    <input type="text" id="registro-run" placeholder="19011022K" maxlength="9" required>
+                    <div class="error-message" id="registro-run-error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="registro-nombre">Nombre completo</label>
+                    <input type="text" id="registro-nombre" required>
+                    <div class="error-message" id="registro-nombre-error"></div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="register-email">Correo electrónico</label>
-                    <input type="email" id="register-email" required>
-                    <div class="error-message" id="register-email-error"></div>
+                    <label for="registro-email">Correo electrónico</label>
+                    <input type="email" id="registro-email" required>
+                    <div class="error-message" id="registro-email-error"></div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="register-password">Contraseña</label>
-                    <input type="password" id="register-password" required>
-                    <div class="error-message" id="register-password-error"></div>
+                    <label for="registro-nacimiento">Fecha de nacimiento</label>
+                    <input type="date" id="registro-nacimiento" required>
+                    <div class="error-message" id="registro-nacimiento-error"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="registro-region">Región</label>
+                    <select id="registro-region" required>
+                        <option value="">Selecciona una región</option>
+                    </select>
+                    <div class="error-message" id="registro-region-error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="registro-comuna">Comuna</label>
+                    <select id="registro-comuna" required disabled>
+                        <option value="">Selecciona una comuna</option>
+                    </select>
+                    <div class="error-message" id="registro-comuna-error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="registro-direccion">Dirección</label>
+                    <input type="text" id="registro-direccion" required>
+                    <div class="error-message" id="registro-direccion-error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="registro-contrasena">Contrasena</label>
+                    <input type="password" id="registro-contrasena" required>
+                    <div class="error-message" id="registro-contrasena-error"></div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="register-confirm-password">Confirmar contraseña</label>
-                    <input type="password" id="register-confirm-password" required>
-                    <div class="error-message" id="register-confirm-password-error"></div>
+                    <label for="registro-confirmar-contrasena">Confirmar contrasena</label>
+                    <input type="password" id="registro-confirmar-contrasena" required>
+                    <div class="error-message" id="registro-confirmar-contrasena-error"></div>
                 </div>
                 
                 <button type="submit" class="btn">Crear Cuenta</button>
@@ -72,6 +102,7 @@
         </div>
     </footer>
 
+    <script src="assets/js/regiones-comunas.js"></script>
     <script src="assets/js/auth.js"></script>
     
 </body>

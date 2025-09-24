@@ -6,10 +6,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Cargar items del carrito
 function loadCartItems() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const cartItemsContainer = document.getElementById('cart-items');
-    const emptyCartMessage = document.getElementById('empty-cart-message');
-    const cartSummary = document.querySelector('.cart-summary');
+    const cart = JSON.parse(localStorage.getItem('cart')) || []; // Obtener carrito del localStorage
+    const cartItemsContainer = document.getElementById('cart-items'); // Contenedor de items    
+    const emptyCartMessage = document.getElementById('empty-cart-message'); // Mensaje de carrito vacío
+    const cartSummary = document.querySelector('.cart-summary'); // Resumen del carrito
     
     if (cart.length === 0) {
         emptyCartMessage.style.display = 'block';
@@ -17,8 +17,8 @@ function loadCartItems() {
         return;
     }
     
-    emptyCartMessage.style.display = 'none';
-    cartSummary.style.display = 'block';
+    emptyCartMessage.style.display = 'none'; // Ocultar mensaje de carrito vacío
+    cartSummary.style.display = 'block'; // Mostrar resumen del carrito
     
     cartItemsContainer.innerHTML = cart.map(item => `
         <div class="cart-item" data-id="${item.id}">
