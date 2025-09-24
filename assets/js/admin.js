@@ -35,9 +35,10 @@ function guardarProducto() {
   const precio = parseInt(document.getElementById('precioProducto').value);
   const imagen = document.getElementById('imagenProducto').value.trim();
   const descripcion = document.getElementById('descripcionProducto').value.trim();
+  const stock = parseInt(document.getElementById('stockProducto').value);
 
-  if (!nombre || !precio || !imagen) {
-    return alert("Completa todos los campos obligatorios (nombre, precio, imagen)");
+  if (!nombre || !precio || !imagen || isNaN(stock)) {
+    return alert("Completa todos los campos obligatorios (nombre, precio, imagen, stock)");
   }
 
   const productos = JSON.parse(localStorage.getItem('productos')) || [];
@@ -46,19 +47,23 @@ function guardarProducto() {
     nombre,
     precio,
     imagen,
-    descripcion
+    descripcion,
+    stock
   });
 
   localStorage.setItem('productos', JSON.stringify(productos));
 
+  // Resetear formulario
   document.getElementById('form-producto').style.display = 'none';
   document.getElementById('nombreProducto').value = "";
   document.getElementById('precioProducto').value = "";
   document.getElementById('imagenProducto').value = "";
   document.getElementById('descripcionProducto').value = "";
+  document.getElementById('stockProducto').value = "";
 
   cargarProductos();
 }
+
 
 function cargarProductos() {
   const productos = JSON.parse(localStorage.getItem('productos')) || [];
@@ -67,12 +72,14 @@ function cargarProductos() {
     <tr>
       <td>${p.nombre}</td>
       <td>$${p.precio.toLocaleString('es-CL')}</td>
+      <td>Stock: ${p.stock}</td>
       <td>
         <button class="btn btn-sm btn-danger" onclick="eliminarProducto(${p.id})">Eliminar</button>
       </td>
     </tr>
   `).join('');
 }
+
 
 function eliminarProducto(id) {
   let productos = JSON.parse(localStorage.getItem('productos')) || [];

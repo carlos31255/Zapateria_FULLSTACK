@@ -76,40 +76,54 @@ function logout() {
 
 // Cargar productos destacados
 // Cargar productos destacados (los primeros 4 desde localStorage)
+// Cargar productos destacados (primeros 4)
+// Cargar productos destacados (primeros 4)
 function cargarProductosDestacados() {
-    const contenedorProductosDestacados = document.getElementById('featured-products');
+    const contenedor = document.getElementById('featured-products');
     let productos = JSON.parse(localStorage.getItem('productos')) || [];
 
-    // Si no hay productos, mostramos un mensaje
     if (productos.length === 0) {
-        contenedorProductosDestacados.innerHTML = "<p>No hay productos disponibles.</p>";
+        contenedor.innerHTML = "<p>No hay productos disponibles.</p>";
         return;
     }
 
-    // Tomar solo los primeros 4 como destacados
     const destacados = productos.slice(0, 4);
-
-    contenedorProductosDestacados.innerHTML = destacados.map(producto => `
+    contenedor.innerHTML = destacados.map(p => `
         <div class="product-card">
-            <img src="${producto.imagen || 'assets/img/default.jpg'}" alt="${producto.nombre}" class="product-img">
+            <img src="${p.imagen || 'assets/img/default.jpg'}" alt="${p.nombre}" class="product-img">
             <div class="product-info">
-                <h3 class="product-title">${producto.nombre}</h3>
-                <p class="product-price">$${producto.precio.toLocaleString('es-CL')}</p>
-                <button class="add-to-cart" data-id="${producto.id}" data-name="${producto.nombre}" data-price="${producto.precio}">Añadir al Carrito</button>
+                <h3 class="product-title">${p.nombre}</h3>
+                <p class="product-desc">${p.descripcion || "Sin descripción"}</p>
+                <p class="product-price">$${p.precio.toLocaleString('es-CL')}</p>
+                <p class="product-stock ${p.stock > 0 ? 'in-stock' : 'out-of-stock'}">
+                    ${p.stock > 0 ? `Stock disponible: ${p.stock}` : "Sin stock"}
+                </p>
+                <button class="add-to-cart" 
+                        data-id="${p.id}" 
+                        data-name="${p.nombre}" 
+                        data-price="${p.precio}" 
+                        data-img="${p.imagen}" 
+                        ${p.stock <= 0 ? "disabled" : ""}>
+                    ${p.stock > 0 ? "Añadir al Carrito" : "Agotado"}
+                </button>
             </div>
         </div>
     `).join('');
 
-    // Agregar event listeners a los botones de añadir al carrito
-    document.querySelectorAll('.add-to-cart').forEach(boton => {
-        boton.addEventListener('click', function() {
-            const id = this.dataset.id;
-            const nombre = this.dataset.name;
-            const precio = parseInt(this.dataset.price);
-            agregarAlCarrito(id, nombre, precio);
+    // Event listeners para añadir al carrito
+    document.querySelectorAll('.add-to-cart').forEach(btn => {
+        btn.addEventListener('click', function() {
+            agregarAlCarrito(
+                this.dataset.id, 
+                this.dataset.name, 
+                parseInt(this.dataset.price), 
+                this.dataset.img
+            );
         });
     });
 }
+
+
 
 // Cargar todos los productos (para productos.html)
 function cargarTodosLosProductos() {
