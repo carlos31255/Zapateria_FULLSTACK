@@ -141,7 +141,8 @@ nav {
     text-decoration: none;
 }
 
-.navbar a:hover {
+.navbar a:hover,
+.navbar a.active {
     color: var(--color-acento);
 }
 
@@ -580,4 +581,332 @@ footer {
     border-top: 1px solid var(--color-borde);
     margin-top: 5px;
     padding-top: 10px !important;
+}
+
+/* Estilos del Blog Minimalista */
+.blog-heroe {
+    background: var(--color-blanco);
+    color: var(--color-primario);
+    padding: 60px 0 40px;
+    text-align: center;
+    border-bottom: 1px solid var(--color-borde);
+}
+
+.blog-heroe h1 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.blog-heroe p {
+    font-size: 1.1rem;
+    color: var(--color-texto);
+    opacity: 0.8;
+}
+
+.blog-filtros {
+    margin: 30px 0;
+    text-align: center;
+}
+
+.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--color-borde);
+    background: var(--color-blanco);
+    color: var(--color-texto);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: var(--transicion);
+    font-size: 0.9rem;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    background: var(--color-primario);
+    color: var(--color-blanco);
+    border-color: var(--color-primario);
+}
+
+.blog-grilla {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.blog-tarjeta {
+    background: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: var(--transicion);
+}
+
+.blog-card {
+    background: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: var(--transicion);
+}
+
+.blog-tarjeta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.blog-imagen {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.blog-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.blog-categoria {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--color-primario);
+    color: var(--color-blanco);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.blog-contenido {
+    padding: 20px;
+}
+
+.blog-titulo {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: var(--color-primario);
+    line-height: 1.3;
+}
+
+.blog-extracto {
+    color: var(--color-texto);
+    line-height: 1.5;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
+
+.blog-leer-mas {
+    background: transparent;
+    color: var(--color-primario);
+    border: 1px solid var(--color-primario);
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: var(--transicion);
+    font-size: 0.85rem;
+}
+
+.blog-leer-mas:hover {
+    background: var(--color-primario);
+    color: var(--color-blanco);
+}
+
+.blog-paginacion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 40px 0;
+    padding: 20px 0;
+    border-top: 1px solid var(--color-borde);
+}
+
+.pagination-btn {
+    background: var(--color-blanco);
+    color: var(--color-primario);
+    border: 1px solid var(--color-primario);
+    padding: 8px 16px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: var(--transicion);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: var(--color-acento);
+}
+
+.pagination-btn:disabled {
+    background: var(--color-gris);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.pagination-info {
+    font-weight: 600;
+    color: var(--color-primario);
+}
+
+/* Modal del blog minimalista */
+.blog-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    padding: 20px;
+}
+
+.blog-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.blog-modal-contenido {
+    background: var(--color-blanco);
+    border-radius: 8px;
+    max-width: 700px;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.blog-modal-encabezado {
+    position: sticky;
+    top: 0;
+    background: var(--color-blanco);
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--color-borde);
+    display: flex;
+    justify-content: flex-end;
+    z-index: 10;
+}
+
+.blog-modal-cerrar {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-texto);
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: var(--transicion);
+}
+
+.blog-modal-cerrar:hover {
+    background: var(--color-borde);
+}
+
+.blog-modal-cuerpo {
+    padding: 20px;
+}
+
+.blog-modal-imagen {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.blog-modal-cuerpo .blog-categoria {
+    display: inline-block;
+    background: var(--color-primario);
+    color: var(--color-blanco);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+.blog-modal-titulo {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: var(--color-primario);
+    line-height: 1.3;
+}
+
+.blog-modal-texto {
+    line-height: 1.6;
+    color: var(--color-texto);
+}
+
+.blog-modal-texto p {
+    margin-bottom: 15px;
+}
+
+/* Responsive del Blog Minimalista */
+@media (max-width: 768px) {
+    .blog-heroe {
+        padding: 40px 0 30px;
+    }
+    
+    .blog-heroe h1 {
+        font-size: 2rem;
+    }
+    
+    .blog-heroe p {
+        font-size: 1rem;
+    }
+    
+    .blog-grilla {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .filter-buttons {
+        gap: 8px;
+    }
+    
+    .filter-btn {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .blog-paginacion {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .blog-modal-contenido {
+        margin: 10px;
+        max-height: 95vh;
+    }
+    
+    .blog-modal-titulo {
+        font-size: 1.5rem;
+    }
+    
+    .blog-modal-cuerpo {
+        padding: 15px;
+    }
+    
+    .blog-modal-imagen {
+        height: 200px;
+    }
 }
