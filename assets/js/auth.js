@@ -1,12 +1,13 @@
 // Funcionalidades de autenticación
 
 document.addEventListener('DOMContentLoaded', function() {
-    // verificar si el usuario ya está logueado
     const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
     if (usuarioActual && usuarioActual.logueado) {
-        if (usuarioActual.rol === "admin") {
+        const currentPage = window.location.pathname.split("/").pop(); // obtiene el nombre del archivo actual
+
+        if (usuarioActual.rol === "admin" && currentPage !== "admin.html") {
             window.location.href = 'admin.html';
-        } else {
+        } else if (usuarioActual.rol !== "admin" && currentPage !== "index.html") {
             window.location.href = 'index.html';
         }
     }
