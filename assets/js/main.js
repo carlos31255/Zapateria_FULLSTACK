@@ -75,34 +75,109 @@ function logout() {
 }
 
 // Cargar productos destacados
+// Cargar productos destacados (los primeros 4 desde localStorage)
 function cargarProductosDestacados() {
     const contenedorProductosDestacados = document.getElementById('featured-products');
-    const productos = [
-        {
-            id: 1,
-            nombre: "Zapatillas Deportivas",
-            precio: 89900,
-            imagen: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: 2,
-            nombre: "Botines de Cuero",
-            precio: 119900,
-            imagen: "https://images.unsplash.com/photo-1542280756-74b2f55e73ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: 3,
-            nombre: "Zapatos Formales",
-            precio: 99900,
-            imagen: "https://images.unsplash.com/photo-1562272456-87065009fe68?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-        },
-        {
-            id: 4,
-            nombre: "Sandalias de Verano",
-            precio: 49900,
-            imagen: "https://images.unsplash.com/photo-1521335629791-ce4aec67dd15?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-        }
-    ];
+    let productos = JSON.parse(localStorage.getItem('productos')) || [];
+
+    // Si no hay productos, mostramos un mensaje
+    if (productos.length === 0) {
+        contenedorProductosDestacados.innerHTML = "<p>No hay productos disponibles.</p>";
+        return;
+    }
+
+    // Tomar solo los primeros 4 como destacados
+    const destacados = productos.slice(0, 4);
+
+    contenedorProductosDestacados.innerHTML = destacados.map(producto => `
+        <div class="product-card">
+            <img src="${producto.imagen || 'assets/img/default.jpg'}" alt="${producto.nombre}" class="product-img">
+            <div class="product-info">
+                <h3 class="product-title">${producto.nombre}</h3>
+                <p class="product-price">$${producto.precio.toLocaleString('es-CL')}</p>
+                <button class="add-to-cart" data-id="${producto.id}" data-name="${producto.nombre}" data-price="${producto.precio}">Añadir al Carrito</button>
+            </div>
+        </div>
+    `).join('');
+
+    // Agregar event listeners a los botones de añadir al carrito
+    document.querySelectorAll('.add-to-cart').forEach(boton => {
+        boton.addEventListener('click', function() {
+            const id = this.dataset.id;
+            const nombre = this.dataset.name;
+            const precio = parseInt(this.dataset.price);
+            agregarAlCarrito(id, nombre, precio);
+        });
+    });
+}
+
+// Cargar todos los productos (para productos.html)
+function cargarTodosLosProductos() {
+    const contenedor = document.getElementById('all-products');
+    let productos = JSON.parse(localStorage.getItem('productos')) || [];
+
+    if (!contenedor) return;
+
+    if (productos.length === 0) {
+        contenedor.innerHTML = "<p>No hay productos disponibles.</p>";
+        return;
+    }
+
+    contenedor.innerHTML = productos.map(producto => `
+        <div class="product-card">
+            <img src="${producto.imagen || 'assets/img/default.jpg'}" alt="${producto.nombre}" class="product-img">
+            <div class="product-info">
+                <h3 class="product-title">${producto.nombre}</h3>
+                <p class="product-price">$${producto.precio.toLocaleString('es-CL')}</p>
+                <button class="add-to-cart" data-id="${producto.id}" data-name="${producto.nombre}" data-price="${producto.precio}">Añadir al Carrito</button>
+            </div>
+        </div>
+    `).join('');
+
+    // Agregar event listeners a los botones de añadir al carrito
+    document.querySelectorAll('.add-to-cart').forEach(boton => {
+        boton.addEventListener('click', function() {
+            const id = this.dataset.id;
+            const nombre = this.dataset.name;
+            const precio = parseInt(this.dataset.price);
+            agregarAlCarrito(id, nombre, precio);
+        });
+    });
+}
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    actualizarUIAutenticacion();
+    actualizarContadorCarrito();
+
+    // Menú móvil
+    const botonMenuMovil = document.querySelector('.mobile-menu-btn');
+    const menuNav = document.querySelector('.navbar ul');
+    if (botonMenuMovil && menuNav) {
+        botonMenuMovil.addEventListener('click', function() {
+            menuNav.classList.toggle('active');
+        });
+    }
+
+    // Dropdown usuario
+    const botonMenuUsuario = document.querySelector('.user-menu-btn');
+    if (botonMenuUsuario) {
+        botonMenuUsuario.addEventListener('click', function() {
+            document.querySelector('.user-dropdown').classList.toggle('active');
+        });
+    }
+
+    // Cargar productos destacados en index.html
+    if (document.getElementById('featured-products')) {
+        cargarProductosDestacados();
+    }
+
+    // Cargar todos los productos en productos.html
+    if (document.getElementById('all-products')) {
+        cargarTodosLosProductos();
+    }
+});
+
     
     contenedorProductosDestacados.innerHTML = productos.map(producto => `
         <div class="product-card">
@@ -124,7 +199,7 @@ function cargarProductosDestacados() {
             agregarAlCarrito(id, nombre, precio);
         });
     });
-}
+
 
 // Añadir producto al carrito
 function agregarAlCarrito(id, nombre, precio) {

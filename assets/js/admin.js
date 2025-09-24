@@ -31,15 +31,32 @@ function mostrarFormularioProducto() {
 }
 
 function guardarProducto() {
-  const nombre = document.getElementById('nombreProducto').value;
-  const precio = document.getElementById('precioProducto').value;
-  if (!nombre || !precio) return alert("Completa todos los campos");
+  const nombre = document.getElementById('nombreProducto').value.trim();
+  const precio = parseInt(document.getElementById('precioProducto').value);
+  const imagen = document.getElementById('imagenProducto').value.trim();
+  const descripcion = document.getElementById('descripcionProducto').value.trim();
+
+  if (!nombre || !precio || !imagen) {
+    return alert("Completa todos los campos obligatorios (nombre, precio, imagen)");
+  }
 
   const productos = JSON.parse(localStorage.getItem('productos')) || [];
-  productos.push({ id: Date.now(), nombre, precio });
+  productos.push({
+    id: Date.now(),
+    nombre,
+    precio,
+    imagen,
+    descripcion
+  });
+
   localStorage.setItem('productos', JSON.stringify(productos));
 
   document.getElementById('form-producto').style.display = 'none';
+  document.getElementById('nombreProducto').value = "";
+  document.getElementById('precioProducto').value = "";
+  document.getElementById('imagenProducto').value = "";
+  document.getElementById('descripcionProducto').value = "";
+
   cargarProductos();
 }
 
@@ -49,8 +66,10 @@ function cargarProductos() {
   tbody.innerHTML = productos.map(p => `
     <tr>
       <td>${p.nombre}</td>
-      <td>$${p.precio}</td>
-      <td><button class="btn btn-sm btn-danger" onclick="eliminarProducto(${p.id})">Eliminar</button></td>
+      <td>$${p.precio.toLocaleString('es-CL')}</td>
+      <td>
+        <button class="btn btn-sm btn-danger" onclick="eliminarProducto(${p.id})">Eliminar</button>
+      </td>
     </tr>
   `).join('');
 }
