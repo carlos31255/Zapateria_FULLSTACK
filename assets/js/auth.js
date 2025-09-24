@@ -4,7 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // verificar si el usuario ya está logueado
     const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
     if (usuarioActual && usuarioActual.logueado) {
-        window.location.href = 'index.html';
+        if (usuarioActual.rol === "admin") {
+            window.location.href = 'admin.html';
+        } else {
+            window.location.href = 'index.html';
+        }
     }
     
     // Inicializar selects de región y comuna si existen
@@ -28,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
 
 // Inicializar selects de región y comuna
 function inicializarSelectsRegionComuna() {
@@ -90,23 +95,30 @@ function validarLoginForm() {
         const usuario = usuarios.find(u => u.email === email.value.toLowerCase() && u.contrasena === contrasena.value);
         
         if (usuario) {
-            // Guardar sesión de usuario
-            localStorage.setItem('usuarioActual', JSON.stringify({
-                nombre: usuario.nombre,
-                email: usuario.email,
-                logueado: true
-            }));
-            
-            // Mostrar mensaje de éxito
-            alert(`¡Bienvenido de vuelta, ${usuario.nombre}! Serás redirigido a la página principal.`);
-            
-            // Redirigir a la página principal después de 1 segundo
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 1000);
+    // Guardar sesión de usuario con rol
+localStorage.setItem('usuarioActual', JSON.stringify({
+    nombre: usuario.nombre,
+    email: usuario.email,
+    logueado: true,
+    rol: usuario.rol || "cliente"   // 👈 guardamos el rol
+}));
+
+    
+    // Mostrar mensaje de éxito
+    alert(`¡Bienvenido de vuelta, ${usuario.nombre}!`);
+
+    // 🚨 Redirigir según rol
+    setTimeout(() => {
+        if (usuario.rol === "admin") {
+            window.location.href = 'admin.html';
         } else {
-            mostrarError('login-contrasena-error', 'Email o contrasena incorrectos');
+            window.location.href = 'index.html';
         }
+    }, 1000);
+} else {
+    mostrarError('login-contrasena-error', 'Email o contrasena incorrectos');
+}
+
     }
 }
 
@@ -211,17 +223,19 @@ function validarRegistroForm() {
 
     if (isValid) {
         // Guardar usuario en localStorage con todos los datos
-        const usuario = {
-            run: run.value.trim(),
-            nombre: nombre.value.trim(),
-            email: email.value.toLowerCase(),
-            nacimiento: nacimiento.value,
-            region: region.value,
-            comuna: comuna.value,
-            direccion: direccion.value.trim(),
-            contrasena: contrasena.value,
-            fechaCreacion: new Date().toISOString()
-        };
+const usuario = {
+    run: run.value.trim(),
+    nombre: nombre.value.trim(),
+    email: email.value.toLowerCase(),
+    nacimiento: nacimiento.value,
+    region: region.value,
+    comuna: comuna.value,
+    direccion: direccion.value.trim(),
+    contrasena: contrasena.value,
+    fechaCreacion: new Date().toISOString(),
+    rol: "cliente"   // 👈 nuevo campo
+};
+
         
         // Obtener usuarios existentes
         const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
