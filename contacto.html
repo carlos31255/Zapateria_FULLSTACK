@@ -1,9 +1,110 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>StepStyle - Contacto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/auth.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">Step<span>Style</span></div>
+                <div class="header-actions">
+                    <div class="cart-icon">
+                        <a href="carrito.html"><i class="fas fa-shopping-cart"></i></a>
+                        <span class="cart-count">0</span>
+                    </div>
+                    <div class="user-icon">
+                        <a href="login.html"><i class="fas fa-user"></i></a>
+                    </div>
+                </div>
+            </div>
+            <nav class="navbar">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="productos.html">Productos</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="contacto.html" class="active">Contacto</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contacto Container -->
+    <div class="container auth-container">
+        <div class="form-container">
+            <h2 class="form-title">Contáctanos</h2>
+            <p class="form-subtitle">Envíanos un mensaje y te responderemos pronto.</p>
+            
+            <form id="contacto-form">
+                <div class="form-group">
+                    <label for="contacto-nombre">Nombre</label>
+                    <input type="text" id="contacto-nombre" maxlength="100" required>
+                    <div class="error-message" id="contacto-nombre-error"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="contacto-correo">Correo Electrónico</label>
+                    <input type="email" id="contacto-correo" maxlength="100" required>
+                    <div class="error-message" id="contacto-correo-error"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="contacto-comentario">Comentario</label>
+                    <textarea id="contacto-comentario" rows="6" maxlength="500" placeholder="Escribe tu mensaje aquí..." required></textarea>
+                    <div class="error-message" id="contacto-comentario-error"></div>
+                    <div class="contar-caracteres">
+                        <span id="contar-caracteres">0</span>/500 caracteres
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Enviar Mensaje</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>StepStyle</h4>
+                    <p>Tu tienda de calzado de confianza</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Contacto</h4>
+                    <p><i class="fas fa-phone"></i> +56 9 1234 5678</p>
+                    <p><i class="fas fa-envelope"></i> info@stepstyle.cl</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Síguenos</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 StepStyle. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/contacto.js"></script>
+    
+</body>
+</html>tml>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto</title>
 </head>
 <body>
     

@@ -17,6 +17,17 @@
     max-width: 500px;
 }
 
+.form-logo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo-image {
+    max-width: 300px;
+    height: auto;
+    opacity: 0.9;
+}
+
 .form-title {
     text-align: center;
     margin-bottom: 30px;
@@ -78,6 +89,39 @@
 .form-footer a {
     color: var(--accent);
     font-weight: 500;
+}
+
+/* Estilos específicos para el formulario de contacto */
+.form-subtitle {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 120px;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
+}
+
+.char-counter {
+    text-align: right;
+    font-size: 0.85rem;
+    color: #747d8c;
+    margin-top: 5px;
 }
 
 /* Responsive */
