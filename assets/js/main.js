@@ -8,11 +8,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Menú móvil
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-    const navMenu = document.querySelector('nav ul');
+    const navMenu = document.querySelector('.navbar ul');
     
-    if (mobileMenuBtn) {
+    if (mobileMenuBtn && navMenu) {
         mobileMenuBtn.addEventListener('click', function() {
             navMenu.classList.toggle('active');
+            console.log('Menu toggle clicked'); // Debug
         });
     }
     
