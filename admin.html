@@ -38,12 +38,58 @@
       <!-- Gestión de Usuarios -->
       <div class="tab-pane fade show active" id="usuarios" role="tabpanel">
         <h2 class="h5">Gestión de Usuarios</h2>
+        <button class="btn btn-primary mb-3" onclick="mostrarFormularioUsuario()">Crear Usuario</button>
+        
+        <!-- Formulario para crear nuevo usuario -->
+        <div id="form-usuario" class="card mb-3" style="display:none;">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Crear Nuevo Usuario</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <input type="text" id="nombreUsuario" class="form-control mb-2" placeholder="Nombre completo" required>
+                <input type="email" id="emailUsuario" class="form-control mb-2" placeholder="Correo electrónico" required>
+                <input type="password" id="contrasenaUsuario" class="form-control mb-2" placeholder="Contraseña" required>
+              </div>
+              <div class="col-md-6">
+                <select id="rolUsuario" class="form-select mb-2" required>
+                  <option value="">Seleccionar rol</option>
+                  <option value="cliente">Cliente</option>
+                  <option value="vendedor">Vendedor</option>
+                  <option value="admin">Administrador</option>
+                </select>
+                <select id="generoUsuario" class="form-select mb-2">
+                  <option value="">Seleccionar género</option>
+                  <option value="masculino">Masculino</option>
+                  <option value="femenino">Femenino</option>
+                  <option value="otro">Otro</option>
+                </select>
+                <input type="date" id="fechaNacimientoUsuario" class="form-control mb-2" placeholder="Fecha de nacimiento">
+                <select id="regionUsuario" class="form-select mb-2">
+                  <option value="">Seleccionar región</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-12">
+              <select id="comunaUsuario" class="form-select mb-2" disabled>
+                <option value="">Primero selecciona una región</option>
+              </select>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-success" onclick="guardarUsuario()">Guardar Usuario</button>
+              <button class="btn btn-secondary" onclick="cancelarFormularioUsuario()">Cancelar</button>
+            </div>
+          </div>
+        </div>
+        
         <!-- Bootstrap Table: tabla con estilos -->
         <table class="table table-striped">
           <thead>
             <tr>
               <th>Nombre</th>
               <th>Email</th>
+              <th>Rol</th>
               <th>Fecha Registro</th>
               <th>Acciones</th>
             </tr>

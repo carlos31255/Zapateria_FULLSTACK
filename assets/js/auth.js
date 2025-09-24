@@ -5,9 +5,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (usuarioActual && usuarioActual.logueado) {
         const currentPage = window.location.pathname.split("/").pop(); // obtiene el nombre del archivo actual
 
+        // Redirigir según el rol del usuario
         if (usuarioActual.rol === "admin" && currentPage !== "admin.html") {
             window.location.href = 'admin.html';
-        } else if (usuarioActual.rol !== "admin" && currentPage !== "index.html") {
+        } else if (usuarioActual.rol === "vendedor" && currentPage !== "vendedor.html") {
+            window.location.href = 'vendedor.html';
+        } else if (usuarioActual.rol === "cliente" && (currentPage === "admin.html" || currentPage === "vendedor.html")) {
             window.location.href = 'index.html';
         }
     }
@@ -112,6 +115,8 @@ localStorage.setItem('usuarioActual', JSON.stringify({
     setTimeout(() => {
         if (usuario.rol === "admin") {
             window.location.href = 'admin.html';
+        } else if (usuario.rol === "vendedor") {
+            window.location.href = 'vendedor.html';
         } else {
             window.location.href = 'index.html';
         }
@@ -342,6 +347,64 @@ function ocultarError(elementId) {
     const errorElement = document.getElementById(elementId);
     errorElement.style.display = 'none';
 }
+
+// ====================================
+// INICIALIZACIÓN DE USUARIOS POR DEFECTO
+// ====================================
+
+// Inicializar usuarios por defecto si no existen
+function inicializarUsuariosPorDefecto() {
+    const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+    
+    // Si ya hay usuarios, no hacer nada
+    if (usuarios.length > 0) return;
+    
+    // Crear usuarios por defecto con diferentes roles
+    const usuariosPorDefecto = [
+        {
+            nombre: 'Administrador Sistema',
+            email: 'admin@duoc.cl',
+            contrasena: 'admin123',
+            telefono: '+56 9 1111 1111',
+            fechaNacimiento: '1990-01-01',
+            genero: 'masculino',
+            region: 'Región Metropolitana de Santiago',
+            comuna: 'Santiago',
+            rol: 'admin'
+        },
+        {
+            nombre: 'María Vendedora',
+            email: 'vendedor@duoc.cl',
+            contrasena: 'vend123',
+            telefono: '+56 9 2222 2222',
+            fechaNacimiento: '1995-05-15',
+            genero: 'femenino',
+            region: 'Región Metropolitana de Santiago',
+            comuna: 'Las Condes',
+            rol: 'vendedor'
+        },
+        {
+            nombre: 'Carlos Cliente',
+            email: 'cliente@gmail.com',
+            contrasena: 'cli123',
+            telefono: '+56 9 3333 3333',
+            fechaNacimiento: '1988-10-20',
+            genero: 'masculino',
+            region: 'Región Metropolitana de Santiago',
+            comuna: 'Providencia',
+            rol: 'cliente'
+        }
+    ];
+    
+    // Guardar usuarios por defecto
+    localStorage.setItem('usuarios', JSON.stringify(usuariosPorDefecto));
+    console.log('Usuarios por defecto inicializados:', usuariosPorDefecto);
+}
+
+// Llamar la función de inicialización cuando se carga la página
+document.addEventListener('DOMContentLoaded', function() {
+    inicializarUsuariosPorDefecto();
+});
 
 // Función para cerrar sesión
 function cerrarSesion() {
