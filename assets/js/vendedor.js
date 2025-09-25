@@ -828,12 +828,7 @@ function mostrarMensajeError(containerId, mensaje) {
     }
 }
 
-function cerrarSesion() {
-    if (confirm('¿Está seguro que desea cerrar sesión?')) {
-        localStorage.removeItem('usuarioActual');
-        window.location.href = 'login.html';
-    }
-}
+// Nota: cerrarSesion está definida en main.js
 
 // ====================================
 // DATOS POR DEFECTO

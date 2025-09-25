@@ -20,10 +20,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configurar el dropdown del usuario
     const botonMenuUsuario = document.querySelector('.user-menu-btn');
     if (botonMenuUsuario) {
-        botonMenuUsuario.addEventListener('click', function() {
-            document.querySelector('.user-dropdown').classList.toggle('active');
+        botonMenuUsuario.addEventListener('click', function(e) {
+            e.preventDefault();
+            const dropdown = document.querySelector('.user-dropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('active');
+                console.log('Dropdown del usuario toggled');
+            } else {
+                console.error('No se encontró el elemento .user-dropdown');
+            }
         });
     }
+    
+    // Cerrar dropdown al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        const userMenu = document.querySelector('.user-menu');
+        const dropdown = document.querySelector('.user-dropdown');
+        
+        if (userMenu && dropdown && !userMenu.contains(e.target)) {
+            dropdown.classList.remove('active');
+        }
+    });
     
     // Mensaje de bienvenida en desarrollo
     if (esModoDesarrollo()) {
@@ -86,8 +103,28 @@ function validarEmail(email) {
 
 // Función para cerrar sesión
 function cerrarSesion() {
-    localStorage.removeItem('usuarioActual');
-    window.location.href = 'index.html';
+    const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
+    
+    if (usuarioActual) {
+        console.log(`Cerrando sesión del usuario: ${usuarioActual.nombre} (${usuarioActual.email})`);
+        
+        // Confirmación opcional (comentada para UX más fluida)
+        // if (!confirm(`¿Deseas cerrar la sesión de ${usuarioActual.nombre}?`)) return;
+        
+        localStorage.removeItem('usuarioActual');
+        console.log('Sesión cerrada exitosamente');
+        
+        // Actualizar UI antes de redirigir
+        actualizarUIAutenticacion();
+        
+        // Pequeño delay para mostrar cambios
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 100);
+    } else {
+        console.log('No hay sesión activa para cerrar');
+        window.location.href = 'index.html';
+    }
 }
 
 // Mantener función logout para compatibilidad hacia atrás
@@ -227,12 +264,22 @@ function cargarDatosPrueba() {
     localStorage.setItem('carrito', JSON.stringify(carritoPrueba));
     localStorage.setItem('usuarioActual', JSON.stringify(usuarioPrueba));
     
+    // Actualizar UI inmediatamente
     actualizarContadorCarrito();
     actualizarUIAutenticacion();
     
-    console.log('🧪 Datos de prueba cargados:');
-    console.log('- Carrito con 2 productos');
-    console.log('- Usuario test logueado');
+    // Verificar que el menú se muestre
+    setTimeout(() => {
+        const menuUsuario = document.getElementById('user-menu');
+        const nombreUsuario = document.getElementById('user-name');
+        
+        console.log('🧪 Datos de prueba cargados:');
+        console.log('- Carrito con 2 productos');
+        console.log('- Usuario test logueado');
+        console.log('- Menú de usuario visible:', menuUsuario ? menuUsuario.style.display !== 'none' : 'elemento no encontrado');
+        console.log('- Nombre mostrado:', nombreUsuario ? nombreUsuario.textContent : 'elemento no encontrado');
+        console.log('💡 Haz clic en el nombre del usuario (esquina superior derecha) para ver el dropdown');
+    }, 100);
     
     // Si estamos en la página del carrito, recargar
     if (typeof cargarItemsCarrito === 'function') {
@@ -262,6 +309,8 @@ function ayudaTesting() {
     console.log('🧪 TESTING:');
     console.log('  cargarDatosPrueba()        - Carga datos de prueba');
     console.log('  probarSistemaCarrito()     - Prueba el sistema de carrito');
+    console.log('  probarMenuUsuario()        - Prueba el menú de usuario y logout');
+    console.log('  mostrarMenuUsuario()       - Fuerza la visualización del menú');
     console.log('  ayudaTesting()             - Muestra esta ayuda');
     console.log('');
     console.log('🎨 PANEL VISUAL:');
@@ -339,6 +388,9 @@ function esModoDesarrollo() {
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar datos por defecto si no existen
+    inicializarDatosPorDefecto();
+    
     actualizarUIAutenticacion();
     actualizarContadorCarrito();
 
@@ -363,7 +415,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (esModoDesarrollo()) {
         setTimeout(() => {
             console.log('🚀 === MODO DESARROLLO ACTIVADO ===');
-            console.log(' Ejecuta ayudaTesting() para ver todas las funciones disponibles');
+            console.log('💻 Ejecuta ayudaTesting() para ver todas las funciones disponibles');
             console.log('📦 Carrito actual:', (JSON.parse(localStorage.getItem('carrito')) || []).length, 'items');
             console.log('🔧 Todas las funciones disponibles solo por consola (F12)');
         }, 1000);
@@ -390,4 +442,205 @@ function agregarAlCarrito(id, nombre, precio) {
     } else {
         console.error('Función agregarAlCarritoProducto no disponible. Asegúrate de que productos.js esté cargado.');
     }
+}
+
+// Función para obtener usuario logueado (compatibilidad con otros archivos)
+function obtenerUsuarioLogueado() {
+    return JSON.parse(localStorage.getItem('usuarioActual'));
+}
+
+// Inicializar datos por defecto del sistema
+function inicializarDatosPorDefecto() {
+    // Inicializar productos por defecto si no existen
+    const productos = JSON.parse(localStorage.getItem('productos'));
+    if (!productos || productos.length === 0) {
+        const productosPorDefecto = [
+            {
+                id: 1,
+                nombre: "Nike Air Max 270",
+                precio: 89990,
+                imagen: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                categoria: "deportivos",
+                descripcion: "Zapatillas deportivas con tecnología Air Max para máxima comodidad y estilo.",
+                stock: 25,
+                activo: true,
+                fechaCreacion: new Date().toISOString()
+            },
+            {
+                id: 2,
+                nombre: "Converse Chuck Taylor All Star",
+                precio: 45990,
+                imagen: "https://images.unsplash.com/photo-1552346154-21d32810aba3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                categoria: "casual",
+                descripcion: "Clásicas zapatillas de lona, perfectas para un look casual y juvenil.",
+                stock: 30,
+                activo: true,
+                fechaCreacion: new Date().toISOString()
+            },
+            {
+                id: 3,
+                nombre: "Adidas Stan Smith",
+                precio: 79990,
+                imagen: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                categoria: "casual",
+                descripcion: "Icónicas zapatillas blancas con detalles verdes, un clásico atemporal.",
+                stock: 20,
+                activo: true,
+                fechaCreacion: new Date().toISOString()
+            },
+            {
+                id: 4,
+                nombre: "Zapatos Oxford Clásicos",
+                precio: 129990,
+                imagen: "https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                categoria: "formal",
+                descripcion: "Elegantes zapatos Oxford de cuero genuino para ocasiones formales.",
+                stock: 15,
+                activo: true,
+                fechaCreacion: new Date().toISOString()
+            },
+            {
+                id: 5,
+                nombre: "Tacones Elegantes",
+                precio: 99990,
+                imagen: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                categoria: "mujer",
+                descripcion: "Tacones altos elegantes para eventos especiales y ocasiones formales.",
+                stock: 12,
+                activo: true,
+                fechaCreacion: new Date().toISOString()
+            },
+            {
+                id: 6,
+                nombre: "Botas de Montaña",
+                precio: 149990,
+                imagen: "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                categoria: "outdoor",
+                descripcion: "Resistentes botas de montaña ideales para trekking y actividades al aire libre.",
+                stock: 18,
+                activo: true,
+                fechaCreacion: new Date().toISOString()
+            },
+            {
+                id: 7,
+                nombre: "Sandalias de Verano",
+                precio: 39990,
+                imagen: "https://images.unsplash.com/photo-1505782679771-15200ba4a5db?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                categoria: "verano",
+                descripcion: "Cómodas sandalias perfectas para los días calurosos de verano.",
+                stock: 35,
+                activo: true,
+                fechaCreacion: new Date().toISOString()
+            },
+            {
+                id: 8,
+                nombre: "Zapatillas Running",
+                precio: 119990,
+                imagen: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                categoria: "deportivos",
+                descripcion: "Zapatillas especializadas para running con tecnología de amortiguación avanzada.",
+                stock: 22,
+                activo: true,
+                fechaCreacion: new Date().toISOString()
+            }
+        ];
+        
+        localStorage.setItem('productos', JSON.stringify(productosPorDefecto));
+        console.log('✅ Productos por defecto inicializados:', productosPorDefecto.length, 'productos');
+    }
+}
+
+// Función para forzar la visualización del menú (útil para debugging)
+function mostrarMenuUsuario() {
+    const menuUsuario = document.getElementById('user-menu');
+    const botonLogin = document.getElementById('login-btn');
+    const nombreUsuario = document.getElementById('user-name');
+    
+    if (menuUsuario) {
+        menuUsuario.style.display = 'block';
+        console.log('✅ Menú de usuario forzado a mostrar');
+    }
+    
+    if (botonLogin) {
+        botonLogin.style.display = 'none';
+        console.log('✅ Botón de login ocultado');
+    }
+    
+    if (nombreUsuario) {
+        nombreUsuario.textContent = 'Usuario Test';
+        console.log('✅ Nombre de usuario establecido');
+    }
+    
+    return 'Menú forzado a mostrar - haz clic en el nombre de usuario';
+}
+
+// Función de prueba para el menú de usuario
+function probarMenuUsuario() {
+    console.log('=== PRUEBA DEL MENÚ DE USUARIO ===');
+    
+    const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
+    console.log('Usuario actual:', usuarioActual);
+    
+    // Verificar elementos DOM
+    const elementos = {
+        menuUsuario: document.getElementById('user-menu'),
+        nombreUsuario: document.getElementById('user-name'),
+        botonLogin: document.getElementById('login-btn'),
+        botonMenuUsuario: document.querySelector('.user-menu-btn'),
+        dropdown: document.querySelector('.user-dropdown'),
+        adminLink: document.getElementById('admin-link'),
+        vendedorLink: document.getElementById('vendedor-link')
+    };
+    
+    console.log('Elementos encontrados:', {
+        menuUsuario: !!elementos.menuUsuario,
+        nombreUsuario: !!elementos.nombreUsuario,
+        botonLogin: !!elementos.botonLogin,
+        botonMenuUsuario: !!elementos.botonMenuUsuario,
+        dropdown: !!elementos.dropdown,
+        adminLink: !!elementos.adminLink,
+        vendedorLink: !!elementos.vendedorLink
+    });
+    
+    // Verificar visibilidad según estado de sesión
+    if (usuarioActual && usuarioActual.logueado) {
+        console.log('✅ Usuario logueado detectado');
+        console.log(`Nombre: ${usuarioActual.nombre}, Rol: ${usuarioActual.rol}`);
+        
+        if (elementos.menuUsuario && elementos.menuUsuario.style.display !== 'none') {
+            console.log('✅ Menú de usuario visible');
+        } else {
+            console.log('❌ Menú de usuario no visible');
+        }
+        
+        if (elementos.botonLogin && elementos.botonLogin.style.display === 'none') {
+            console.log('✅ Botón de login oculto correctamente');
+        } else {
+            console.log('❌ Botón de login debería estar oculto');
+        }
+    } else {
+        console.log('ℹ️ No hay usuario logueado');
+        
+        if (elementos.botonLogin && elementos.botonLogin.style.display !== 'none') {
+            console.log('✅ Botón de login visible');
+        } else {
+            console.log('❌ Botón de login no visible');
+        }
+    }
+    
+    console.log('=== PRUEBA COMPLETADA ===');
+    console.log('💡 Para probar el menú:');
+    console.log('1. Ejecuta cargarDatosPrueba() para simular login');
+    console.log('2. Haz clic en el nombre de usuario en la esquina superior derecha');
+    console.log('3. Verifica que aparezca el dropdown con "Cerrar Sesión"');
+    
+    return {
+        usuarioActual,
+        elementos,
+        funcionesDisponibles: {
+            actualizarUIAutenticacion: typeof actualizarUIAutenticacion === 'function',
+            cerrarSesion: typeof cerrarSesion === 'function',
+            logout: typeof logout === 'function'
+        }
+    };
 }

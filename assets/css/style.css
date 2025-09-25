@@ -1079,6 +1079,125 @@ footer {
     color: var(--color-texto);
 }
 
+/* ====================================
+   ESTILOS PARA PERFIL Y PEDIDOS
+==================================== */
+
+/* Estilos para la página de perfil */
+.profile-info {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.profile-info .form-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.profile-info .form-group:last-child {
+    border-bottom: none;
+}
+
+.profile-info label {
+    font-weight: 600;
+    color: #495057;
+    min-width: 180px;
+}
+
+.profile-info p {
+    margin: 0;
+    color: #6c757d;
+    text-align: right;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+}
+
+.profile-actions .btn {
+    flex: 1;
+    max-width: 200px;
+}
+
+.profile-links {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.profile-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    color: #495057;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.profile-link:hover {
+    background: #e9ecef;
+    color: #212529;
+    transform: translateY(-2px);
+}
+
+/* Estilos adicionales para el contador de caracteres */
+.contar-caracteres {
+    text-align: right;
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+}
+
+/* Mejoras para el panel de testing (solo visible en desarrollo) */
+.testing-panel {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    z-index: 9999;
+    font-size: 12px;
+    max-width: 250px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.testing-panel h4 {
+    margin: 0 0 10px 0;
+    color: #28a745;
+    font-size: 14px;
+}
+
+.testing-panel button {
+    display: block;
+    width: 100%;
+    margin: 5px 0;
+    padding: 8px;
+    font-size: 11px;
+    background: #6366f1;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+}
+
+.testing-panel button:hover {
+    background: #4f46e5;
+}
+
 /* Responsive Design para Nosotros */
 @media (max-width: 768px) {
     .nosotros-hero h1 {
@@ -1114,5 +1233,32 @@ footer {
     
     .valores h2 {
         font-size: 2rem;
+    }
+    
+    /* Responsive para perfil */
+    .profile-info .form-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .profile-info label {
+        min-width: auto;
+    }
+    
+    .profile-info p {
+        text-align: left;
+    }
+    
+    .profile-actions {
+        flex-direction: column;
+    }
+    
+    .profile-actions .btn {
+        max-width: none;
+    }
+    
+    .profile-links {
+        flex-direction: column;
     }
 }

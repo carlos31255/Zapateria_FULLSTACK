@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Menú Usuario - StepStyle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body { margin: 20px; font-family: Arial, sans-serif; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .debug-info { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 3px; }
+        .btn { display: inline-block; padding: 8px 16px; margin: 5px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; cursor: pointer; border: none; }
+        .btn:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test del Menú de Usuario</h1>
+    
+    <div class="test-section">
+        <h2>1. Estado Actual del Sistema</h2>
+        <div id="estado-sistema" class="debug-info">Cargando...</div>
+        <button class="btn" onclick="verificarEstado()">🔍 Verificar Estado</button>
+        <button class="btn" onclick="simularLogin()">👤 Simular Login</button>
+        <button class="btn" onclick="limpiarTodo()">🗑️ Limpiar Todo</button>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Menú de Usuario (Réplica del Header)</h2>
+        
+        <!-- Réplica del header para testing -->
+        <header style="background: #333; color: white; padding: 15px; border-radius: 5px;">
+            <div class="container">
+                <div class="header-top">
+                    <div class="logo">Step<span>Style</span></div>
+                    <div class="header-actions">
+                        <div class="cart-icon">
+                            <a href="carrito.html"><i class="fas fa-shopping-cart"></i></a>
+                            <span class="cart-count">0</span>
+                        </div>
+                        <!-- Menu del usuario -->
+                        <div class="user-menu" id="user-menu" style="display: none;">
+                            <div class="user-menu-btn">
+                                <i class="fas fa-user-circle"></i>
+                                <span id="user-name"></span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="user-dropdown">
+                                <a href="perfil.html">Mi Perfil</a>
+                                <a href="pedidos.html">Mis Pedidos</a>
+                                <a href="admin.html" id="admin-link" style="display: none;">Administrar</a>
+                                <a href="vendedor.html" id="vendedor-link" style="display: none;">Panel Vendedor</a>
+                                <a href="#" class="logout-btn" onclick="logout()">Cerrar Sesión</a>
+                            </div>
+                        </div>
+                        <!-- Botón de login cuando no hay sesión -->
+                        <a href="login.html" class="btn btn-outline" id="login-btn">Iniciar Sesión</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Información de Debug</h2>
+        <div id="debug-info" class="debug-info">
+            <p>Abre la consola (F12) para ver logs detallados.</p>
+        </div>
+    </div>
+
+    <script src="assets/js/main.js"></script>
+    <script>
+        // Funciones de testing específicas para esta página
+        function verificarEstado() {
+            const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
+            
+            const estado = {
+                usuarioLogueado: !!usuarioActual,
+                datosUsuario: usuarioActual,
+                elementosDOM: {
+                    userMenu: !!document.getElementById('user-menu'),
+                    userName: !!document.getElementById('user-name'),
+                    loginBtn: !!document.getElementById('login-btn'),
+                    dropdown: !!document.querySelector('.user-dropdown'),
+                    userMenuBtn: !!document.querySelector('.user-menu-btn')
+                }
+            };
+            
+            document.getElementById('estado-sistema').innerHTML = `
+                <strong>Usuario logueado:</strong> ${estado.usuarioLogueado ? '✅ SÍ' : '❌ NO'}<br>
+                ${estado.datosUsuario ? `<strong>Nombre:</strong> ${estado.datosUsuario.nombre}<br><strong>Email:</strong> ${estado.datosUsuario.email}<br><strong>Rol:</strong> ${estado.datosUsuario.rol}<br>` : ''}
+                <strong>Elementos DOM encontrados:</strong><br>
+                - user-menu: ${estado.elementosDOM.userMenu ? '✅' : '❌'}<br>
+                - user-name: ${estado.elementosDOM.userName ? '✅' : '❌'}<br>
+                - login-btn: ${estado.elementosDOM.loginBtn ? '✅' : '❌'}<br>
+                - user-dropdown: ${estado.elementosDOM.dropdown ? '✅' : '❌'}<br>
+                - user-menu-btn: ${estado.elementosDOM.userMenuBtn ? '✅' : '❌'}
+            `;
+            
+            console.log('Estado completo:', estado);
+            actualizarUIAutenticacion();
+        }
+        
+        function simularLogin() {
+            const usuarioPrueba = {
+                nombre: "Usuario Test",
+                email: "test@ejemplo.com",
+                rol: "cliente",
+                logueado: true
+            };
+            
+            localStorage.setItem('usuarioActual', JSON.stringify(usuarioPrueba));
+            console.log('Usuario de prueba creado:', usuarioPrueba);
+            
+            actualizarUIAutenticacion();
+            verificarEstado();
+        }
+        
+        function limpiarTodo() {
+            localStorage.removeItem('usuarioActual');
+            console.log('Datos limpiados');
+            
+            actualizarUIAutenticacion();
+            verificarEstado();
+        }
+        
+        // Inicializar al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧪 Página de testing cargada');
+            verificarEstado();
+        });
+        
+        // Override del dropdown para testing
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.user-menu-btn')) {
+                e.preventDefault();
+                const dropdown = document.querySelector('.user-dropdown');
+                if (dropdown) {
+                    dropdown.classList.toggle('active');
+                    console.log('Dropdown toggled, active:', dropdown.classList.contains('active'));
+                    
+                    // Información adicional de debug
+                    const rect = dropdown.getBoundingClientRect();
+                    console.log('Posición del dropdown:', rect);
+                    console.log('Estilos computados:', window.getComputedStyle(dropdown));
+                }
+            }
+        });
+    </script>
+</body>
+</html>

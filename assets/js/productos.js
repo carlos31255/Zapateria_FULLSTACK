@@ -361,17 +361,7 @@ function aplicarFiltros() {
     mostrarProductos(filteredProducts);
 }
 
-// Actualizar contador del carrito
-function actualizarContadorCarrito() {
-    const cart = JSON.parse(localStorage.getItem('carrito')) || [];
-    const count = cart.reduce((total, item) => total + (item.cantidad || 0), 0);
-    const cartCountElement = document.querySelector('.cart-count');
-    
-    if (cartCountElement) {
-        cartCountElement.textContent = count;
-        cartCountElement.style.display = count > 0 ? 'flex' : 'none';
-    }
-}
+// Nota: actualizarContadorCarrito está definida en main.js
 
 // Inicializar productos destacados en el index
 function inicializarProductosDestacados() {

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StepStyle - Mis Pedidos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/auth.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">Step<span>Style</span></div>
+                <div class="header-actions">
+                    <div class="cart-icon">
+                        <a href="carrito.html"><i class="fas fa-shopping-cart"></i></a>
+                        <span class="cart-count">0</span>
+                    </div>
+                    <!-- Menu del usuario -->
+                    <div class="user-menu" id="user-menu" style="display: none;">
+                        <div class="user-menu-btn">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="user-name"></span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="user-dropdown">
+                            <a href="perfil.html">Mi Perfil</a>
+                            <a href="pedidos.html">Mis Pedidos</a>
+                            <a href="#" class="logout-btn" onclick="logout()">Cerrar Sesión</a>
+                        </div>
+                    </div>
+                    <!-- Y el botón de login cuando no hay sesión -->
+                    <a href="login.html" class="btn btn-outline" id="login-btn">Iniciar Sesión</a>
+                    
+                    <div class="mobile-menu-btn">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                </div>
+            </div>
+            <nav class="navbar">
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="productos.html">Productos</a></li>
+                    <li><a href="nosotros.html">Nosotros</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="contacto.html">Contacto</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <div class="container">
+        <div style="max-width: 1000px; margin: 2rem auto; padding: 0 1rem;">
+            <h1 style="text-align: center; margin-bottom: 2rem; color: #333;">
+                <i class="fas fa-shopping-bag"></i> Mis Pedidos
+            </h1>
+
+            <!-- Filtros -->
+            <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+                    <div>
+                        <label for="filtro-estado" style="font-weight: 500;">Estado:</label>
+                        <select id="filtro-estado" style="margin-left: 0.5rem; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="">Todos</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="procesando">Procesando</option>
+                            <option value="enviado">Enviado</option>
+                            <option value="entregado">Entregado</option>
+                            <option value="cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="filtro-fecha" style="font-weight: 500;">Desde:</label>
+                        <input type="date" id="filtro-fecha" style="margin-left: 0.5rem; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <button onclick="filtrarPedidos()" class="btn" style="background: #6366f1; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">
+                        <i class="fas fa-filter"></i> Filtrar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lista de pedidos -->
+            <div id="lista-pedidos">
+                <!-- Mensaje cuando no hay pedidos -->
+                <div id="sin-pedidos" style="text-align: center; padding: 3rem; background: #f8f9fa; border-radius: 8px; display: none;">
+                    <i class="fas fa-shopping-bag" style="font-size: 4rem; color: #ccc; margin-bottom: 1rem;"></i>
+                    <h3 style="color: #666;">No tienes pedidos aún</h3>
+                    <p style="color: #888; margin-bottom: 2rem;">¡Explora nuestros productos y realiza tu primera compra!</p>
+                    <a href="productos.html" class="btn" style="background: #6366f1; color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 4px;">
+                        Ver Productos
+                    </a>
+                </div>
+
+                <!-- Contenedor de pedidos -->
+                <div id="contenedor-pedidos">
+                    <!-- Los pedidos se cargarán aquí dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Paginación -->
+            <div id="paginacion" style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem;">
+                <!-- Se generará dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>StepStyle</h3>
+                    <p>Tu tienda de confianza para calzado de calidad. Encuentra el estilo perfecto para cada ocasión.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Enlaces Rápidos</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="productos.html">Productos</a></li>
+                        <li><a href="nosotros.html">Nosotros</a></li>
+                        <li><a href="contacto.html">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contacto</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Av. Principal 123, Santiago</p>
+                    <p><i class="fas fa-phone"></i> +56 2 2345 6789</p>
+                    <p><i class="fas fa-envelope"></i> info@stepstyle.cl</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 StepStyle. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="assets/js/main.js"></script>
+    <script>
+        let pedidosUsuario = [];
+        let pedidosFiltrados = [];
+        let paginaActual = 1;
+        const pedidosPorPagina = 5;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarAutenticacion();
+            cargarPedidos();
+        });
+
+        function verificarAutenticacion() {
+            const usuarioLogueado = obtenerUsuarioLogueado();
+            if (!usuarioLogueado) {
+                window.location.href = 'login.html';
+                return;
+            }
+        }
+
+        function cargarPedidos() {
+            const usuarioLogueado = obtenerUsuarioLogueado();
+            if (!usuarioLogueado) return;
+
+            // Simular pedidos del usuario (en una aplicación real vendrían del servidor)
+            pedidosUsuario = JSON.parse(localStorage.getItem('pedidos_' + usuarioLogueado.email) || '[]');
+            
+            // Si no hay pedidos, crear algunos de ejemplo
+            if (pedidosUsuario.length === 0) {
+                crearPedidosEjemplo();
+            }
+
+            pedidosFiltrados = [...pedidosUsuario];
+            mostrarPedidos();
+        }
+
+        function crearPedidosEjemplo() {
+            const usuarioLogueado = obtenerUsuarioLogueado();
+            if (!usuarioLogueado) return;
+
+            const pedidosEjemplo = [
+                {
+                    id: 'PED-001',
+                    fecha: '2025-01-10',
+                    estado: 'entregado',
+                    total: 89990,
+                    productos: [
+                        { nombre: 'Zapatillas Nike Air Max', cantidad: 1, precio: 89990 }
+                    ]
+                },
+                {
+                    id: 'PED-002', 
+                    fecha: '2025-01-08',
+                    estado: 'enviado',
+                    total: 125980,
+                    productos: [
+                        { nombre: 'Botas de Cuero', cantidad: 1, precio: 79990 },
+                        { nombre: 'Calcetines Premium', cantidad: 2, precio: 22995 }
+                    ]
+                }
+            ];
+
+            localStorage.setItem('pedidos_' + usuarioLogueado.email, JSON.stringify(pedidosEjemplo));
+            pedidosUsuario = pedidosEjemplo;
+        }
+
+        function mostrarPedidos() {
+            const contenedor = document.getElementById('contenedor-pedidos');
+            const sinPedidos = document.getElementById('sin-pedidos');
+
+            if (pedidosFiltrados.length === 0) {
+                contenedor.innerHTML = '';
+                sinPedidos.style.display = 'block';
+                return;
+            }
+
+            sinPedidos.style.display = 'none';
+
+            // Calcular pedidos para la página actual
+            const inicio = (paginaActual - 1) * pedidosPorPagina;
+            const fin = inicio + pedidosPorPagina;
+            const pedidosPagina = pedidosFiltrados.slice(inicio, fin);
+
+            contenedor.innerHTML = pedidosPagina.map(pedido => crearTarjetaPedido(pedido)).join('');
+            crearPaginacion();
+        }
+
+        function crearTarjetaPedido(pedido) {
+            const estadoColor = {
+                'pendiente': '#fbbf24',
+                'procesando': '#3b82f6',
+                'enviado': '#8b5cf6',
+                'entregado': '#10b981',
+                'cancelado': '#ef4444'
+            };
+
+            const estadoIcono = {
+                'pendiente': 'fas fa-clock',
+                'procesando': 'fas fa-cog fa-spin',
+                'enviado': 'fas fa-truck',
+                'entregado': 'fas fa-check-circle',
+                'cancelado': 'fas fa-times-circle'
+            };
+
+            return `
+                <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 1rem;">
+                        <div>
+                            <h3 style="margin: 0 0 0.5rem 0; color: #111827;">Pedido ${pedido.id}</h3>
+                            <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">
+                                <i class="fas fa-calendar"></i> ${new Date(pedido.fecha).toLocaleDateString('es-CL')}
+                            </p>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="background: ${estadoColor[pedido.estado]}; color: white; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 500;">
+                                <i class="${estadoIcono[pedido.estado]}"></i> ${pedido.estado.charAt(0).toUpperCase() + pedido.estado.slice(1)}
+                            </span>
+                            <p style="margin: 0.5rem 0 0 0; font-size: 1.1rem; font-weight: 600; color: #111827;">
+                                $${pedido.total.toLocaleString('es-CL')}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div style="border-top: 1px solid #e5e7eb; padding-top: 1rem;">
+                        <h4 style="margin: 0 0 0.5rem 0; color: #374151; font-size: 0.9rem;">Productos:</h4>
+                        ${pedido.productos.map(producto => `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">
+                                <span style="color: #374151;">${producto.nombre} (x${producto.cantidad})</span>
+                                <span style="color: #111827; font-weight: 500;">$${producto.precio.toLocaleString('es-CL')}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                        <button onclick="verDetallePedido('${pedido.id}')" style="background: #6366f1; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+                            <i class="fas fa-eye"></i> Ver Detalle
+                        </button>
+                        ${pedido.estado === 'pendiente' ? `
+                            <button onclick="cancelarPedido('${pedido.id}')" style="background: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function crearPaginacion() {
+            const totalPaginas = Math.ceil(pedidosFiltrados.length / pedidosPorPagina);
+            const paginacion = document.getElementById('paginacion');
+            
+            if (totalPaginas <= 1) {
+                paginacion.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            
+            for (let i = 1; i <= totalPaginas; i++) {
+                html += `
+                    <button onclick="cambiarPagina(${i})" style="padding: 0.5rem 0.75rem; border: 1px solid ${i === paginaActual ? '#6366f1' : '#ddd'}; background: ${i === paginaActual ? '#6366f1' : 'white'}; color: ${i === paginaActual ? 'white' : '#333'}; border-radius: 4px; cursor: pointer;">
+                        ${i}
+                    </button>
+                `;
+            }
+            
+            paginacion.innerHTML = html;
+        }
+
+        function cambiarPagina(pagina) {
+            paginaActual = pagina;
+            mostrarPedidos();
+        }
+
+        function filtrarPedidos() {
+            const estadoFiltro = document.getElementById('filtro-estado').value;
+            const fechaFiltro = document.getElementById('filtro-fecha').value;
+
+            pedidosFiltrados = pedidosUsuario.filter(pedido => {
+                const coincideEstado = !estadoFiltro || pedido.estado === estadoFiltro;
+                const coincideFecha = !fechaFiltro || pedido.fecha >= fechaFiltro;
+                return coincideEstado && coincideFecha;
+            });
+
+            paginaActual = 1;
+            mostrarPedidos();
+        }
+
+        function verDetallePedido(idPedido) {
+            const pedido = pedidosUsuario.find(p => p.id === idPedido);
+            if (pedido) {
+                alert(`Detalle del pedido ${pedido.id}:\n\nFecha: ${pedido.fecha}\nEstado: ${pedido.estado}\nTotal: $${pedido.total.toLocaleString('es-CL')}\n\nProductos:\n${pedido.productos.map(p => `- ${p.nombre} (x${p.cantidad}) - $${p.precio.toLocaleString('es-CL')}`).join('\n')}`);
+            }
+        }
+
+        function cancelarPedido(idPedido) {
+            if (confirm('¿Estás seguro de que deseas cancelar este pedido?')) {
+                const pedido = pedidosUsuario.find(p => p.id === idPedido);
+                if (pedido) {
+                    pedido.estado = 'cancelado';
+                    const usuarioLogueado = obtenerUsuarioLogueado();
+                    localStorage.setItem('pedidos_' + usuarioLogueado.email, JSON.stringify(pedidosUsuario));
+                    cargarPedidos();
+                    alert('Pedido cancelado exitosamente');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
