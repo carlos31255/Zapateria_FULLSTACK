@@ -41,6 +41,25 @@
             <a href="productos.html" class="btn btn-primary">Ver Productos</a>
         </div>
 
+        <!-- Hidden Template for Cart Items -->
+        <template id="cart-item-template">
+            <div class="cart-item">
+                <div class="item-info">
+                    <img class="item-img" alt="">
+                    <div class="item-details">
+                        <h3 class="item-name"></h3>
+                        <p class="item-price"></p>
+                    </div>
+                </div>
+                <div class="item-actions">
+                    <button class="cantidad-btn decrease" type="button">-</button>
+                    <input type="number" class="cantidad-input" min="1">
+                    <button class="cantidad-btn increase" type="button">+</button>
+                    <button class="remove-btn" type="button"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        </template>
+
         <!-- Cart Items Container -->
         <div class="row">
             <div class="col-md-8">

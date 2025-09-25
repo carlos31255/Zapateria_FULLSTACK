@@ -19,8 +19,28 @@
                         <a href="carrito.html"><i class="fas fa-shopping-cart"></i></a>
                         <span class="cart-count">0</span>
                     </div>
-                    <div class="user-icon">
+                    
+                    <!-- Menú de usuario -->
+                    <div class="user-menu" id="user-menu" style="display: none;">
+                        <div class="user-menu-btn">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="user-name">Usuario</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="user-dropdown">
+                            <a href="admin.html" id="admin-link" style="display: none;">Administrar</a>
+                            <a href="vendedor.html" id="vendedor-link" style="display: none;">Panel Vendedor</a>
+                            <a href="#" onclick="logout()">Cerrar Sesión</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Botón de login (cuando no hay usuario logueado) -->
+                    <div class="login-btn" id="login-btn">
                         <a href="login.html"><i class="fas fa-user"></i></a>
+                    </div>
+                    
+                    <div class="mobile-menu-btn">
+                        <i class="fas fa-bars"></i>
                     </div>
                 </div>
             </div>
@@ -28,6 +48,7 @@
                 <ul>
                     <li><a href="index.html">Inicio</a></li>
                     <li><a href="productos.html">Productos</a></li>
+                    <li><a href="nosotros.html">Nosotros</a></li>
                     <li><a href="blog.html">Blog</a></li>
                     <li><a href="contacto.html" class="active">Contacto</a></li>
                 </ul>
@@ -99,17 +120,8 @@
             </div>
         </footer>
 
+    <script src="assets/js/main.js"></script>
     <script src="assets/js/contacto.js"></script>
-    
-</body>
-</html>tml>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contacto</title>
-</head>
-<body>
     
 </body>
 </html>

@@ -2,16 +2,16 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Si estamos en la página de productos
     if (document.getElementById('all-products')) {
-        initializeProducts();
-        setupFilters();
+        inicializarProductos();
+        configurarFiltros();
     }
     
     // Si estamos en el index (productos destacados)
     if (document.getElementById('featured-products')) {
-        initializeFeaturedProducts();
+        inicializarProductosDestacados();
     }
     
-    updateCartCount();
+    actualizarContadorCarrito();
 });
 
 // Datos de productos (simulando una base de datos)
@@ -91,21 +91,24 @@ const productsData = [
 ];
 
 // Inicializar productos
-function initializeProducts() {
+function inicializarProductos() {
+    console.log('Inicializando productos...');
     // Cargar productos desde localStorage si existen, sino usar datos por defecto
     let products = JSON.parse(localStorage.getItem('productos')) || productsData;
+    console.log('Productos cargados:', products);
     
     // Si no hay productos en localStorage, guardar los datos por defecto
     if (!localStorage.getItem('productos')) {
+        console.log('Guardando productos por defecto en localStorage');
         localStorage.setItem('productos', JSON.stringify(productsData));
         products = productsData;
     }
     
-    displayProducts(products);
+    mostrarProductos(products);
 }
 
 // Mostrar productos en el DOM
-function displayProducts(products) {
+function mostrarProductos(products) {
     const container = document.getElementById('all-products');
     
     // Limpiar contenedor
@@ -122,13 +125,14 @@ function displayProducts(products) {
     }
     
     products.forEach(product => {
-        const productCard = createProductCard(product);
+        const productCard = crearTarjetaProducto(product);
         container.appendChild(productCard);
     });
 }
 
 // Crear tarjeta de producto
-function createProductCard(product) {
+function crearTarjetaProducto(product) {
+    console.log('Creando tarjeta para producto:', product);
     const card = document.createElement('div');
     card.className = 'product-card';
     
@@ -189,7 +193,9 @@ function createProductCard(product) {
     
     const title = document.createElement('h3');
     title.className = 'product-title';
-    title.textContent = product.nombre || 'Producto sin nombre';
+    const nombreProducto = product.nombre || product.name || 'Producto sin nombre';
+    title.textContent = nombreProducto;
+    console.log('Creando tarjeta - Nombre del producto:', nombreProducto, 'Producto completo:', product);
     
     const description = document.createElement('p');
     description.className = 'product-description';
@@ -203,7 +209,7 @@ function createProductCard(product) {
     const addButton = document.createElement('button');
     addButton.className = 'btn add-to-cart-btn';
     addButton.innerHTML = '<i class="fas fa-shopping-cart"></i> Agregar al Carrito';
-    addButton.addEventListener('click', () => addToCart(product));
+    addButton.addEventListener('click', () => agregarAlCarritoProducto(product));
     
     // Si no hay stock, deshabilitar botón
     if (product.stock === 0) {
@@ -225,20 +231,22 @@ function createProductCard(product) {
 }
 
 // Agregar producto al carrito
-function addToCart(product) {
+function agregarAlCarritoProducto(product) {
+    console.log('Agregando producto al carrito:', product);
+    
     if (product.stock <= 0) {
         alert('Este producto no tiene stock disponible');
         return;
     }
     
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let cart = JSON.parse(localStorage.getItem('carrito')) || [];
     
     // Verificar si el producto ya está en el carrito
     const existingItemIndex = cart.findIndex(item => item.id === product.id);
     
     if (existingItemIndex !== -1) {
         // Si ya existe, aumentar cantidad
-        cart[existingItemIndex].quantity += 1;
+        cart[existingItemIndex].cantidad += 1;
     } else {
         // Si no existe, agregar nuevo item
         cart.push({
@@ -246,22 +254,24 @@ function addToCart(product) {
             nombre: product.nombre,
             precio: product.precio,
             imagen: product.imagen,
-            quantity: 1
+            cantidad: 1
         });
     }
     
     // Guardar carrito actualizado
-    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem('carrito', JSON.stringify(cart));
+    console.log('Carrito guardado:', cart);
     
     // Actualizar contador del carrito
-    updateCartCount();
+    actualizarContadorCarrito();
     
     // Mostrar mensaje de confirmación
-    showAddToCartMessage(product.nombre);
+    const nombreProducto = product.nombre || product.name || 'Producto sin nombre';
+    mostrarMensajeAgregarCarrito(nombreProducto);
 }
 
 // Mostrar mensaje de confirmación
-function showAddToCartMessage(productName) {
+function mostrarMensajeAgregarCarrito(productName) {
     // Crear elemento de notificación
     const notification = document.createElement('div');
     notification.className = 'cart-notification';
@@ -308,53 +318,53 @@ function showAddToCartMessage(productName) {
 }
 
 // Configurar filtros
-function setupFilters() {
+function configurarFiltros() {
     const categoryFilter = document.getElementById('category-filter');
     const priceFilter = document.getElementById('price-filter');
     const priceValue = document.getElementById('price-value');
-    const searchInput = document.getElementById('search-input');
+    const entradaBusqueda = document.getElementById('search-input');
     
     // Filtro de categoría
-    categoryFilter.addEventListener('change', applyFilters);
+    categoryFilter.addEventListener('change', aplicarFiltros);
     
     // Filtro de precio
     priceFilter.addEventListener('input', function() {
         const value = parseInt(this.value);
         priceValue.textContent = `$${value.toLocaleString('es-CL')}`;
-        applyFilters();
+        aplicarFiltros();
     });
     
     // Filtro de búsqueda
     let searchTimeout;
-    searchInput.addEventListener('input', function() {
+    entradaBusqueda.addEventListener('input', function() {
         clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(applyFilters, 300); // Debounce
+        searchTimeout = setTimeout(aplicarFiltros, 300); // Debounce
     });
 }
 
 // Aplicar filtros
-function applyFilters() {
+function aplicarFiltros() {
     const products = JSON.parse(localStorage.getItem('productos')) || productsData;
     const category = document.getElementById('category-filter').value;
     const maxPrice = parseInt(document.getElementById('price-filter').value);
-    const searchTerm = document.getElementById('search-input').value.toLowerCase();
+    const terminoBusqueda = document.getElementById('search-input').value.toLowerCase();
     
     let filteredProducts = products.filter(product => {
         const matchesCategory = category === 'all' || product.categoria === category;
         const matchesPrice = product.precio <= maxPrice;
-        const matchesSearch = product.nombre.toLowerCase().includes(searchTerm) || 
-                            product.descripcion.toLowerCase().includes(searchTerm);
+        const matchesSearch = product.nombre.toLowerCase().includes(terminoBusqueda) || 
+                            product.descripcion.toLowerCase().includes(terminoBusqueda);
         
         return matchesCategory && matchesPrice && matchesSearch;
     });
     
-    displayProducts(filteredProducts);
+    mostrarProductos(filteredProducts);
 }
 
 // Actualizar contador del carrito
-function updateCartCount() {
+function actualizarContadorCarrito() {
     const cart = JSON.parse(localStorage.getItem('carrito')) || [];
-    const count = cart.reduce((total, item) => total + (item.quantity || item.cantidad || 0), 0);
+    const count = cart.reduce((total, item) => total + (item.cantidad || 0), 0);
     const cartCountElement = document.querySelector('.cart-count');
     
     if (cartCountElement) {
@@ -364,31 +374,45 @@ function updateCartCount() {
 }
 
 // Inicializar productos destacados en el index
-function initializeFeaturedProducts() {
+function inicializarProductosDestacados() {
+    console.log('Inicializando productos destacados...');
     let products = JSON.parse(localStorage.getItem('productos')) || productsData;
+    console.log('Productos para destacados:', products);
     
     // Si no hay productos en localStorage, guardar los datos por defecto
     if (!localStorage.getItem('productos')) {
+        console.log('Guardando productos por defecto para destacados');
         localStorage.setItem('productos', JSON.stringify(productsData));
         products = productsData;
     }
     
     // Mostrar solo los primeros 4 productos como destacados
     const featuredProducts = products.slice(0, 4);
-    displayFeaturedProducts(featuredProducts);
+    console.log('Productos destacados seleccionados:', featuredProducts);
+    mostrarProductosDestacados(featuredProducts);
 }
 
 // Mostrar productos destacados en el index
-function displayFeaturedProducts(products) {
+function mostrarProductosDestacados(products) {
+    console.log('Mostrando productos destacados en el DOM...');
     const container = document.getElementById('featured-products');
+    console.log('Contenedor encontrado:', !!container);
+    
+    if (!container) {
+        console.error('Contenedor featured-products no encontrado');
+        return;
+    }
     
     // Limpiar contenedor
     while (container.firstChild) {
         container.removeChild(container.firstChild);
     }
     
-    products.forEach(product => {
-        const productCard = createProductCard(product);
+    products.forEach((product, index) => {
+        console.log(`Creando tarjeta ${index + 1} para producto:`, product);
+        const productCard = crearTarjetaProducto(product);
         container.appendChild(productCard);
     });
+    
+    console.log('Productos destacados renderizados correctamente');
 }
