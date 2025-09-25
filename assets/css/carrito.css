@@ -61,16 +61,26 @@
 }
 
 .cantidad-btn {
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
-    padding: 5px 12px;
+    background-color: #e63946;
+    color: white;
+    border: 1px solid #e63946;
+    padding: 8px 14px;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    min-width: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .cantidad-btn:hover {
-    background-color: #e9ecef;
+    background-color: #c1121f;
+    border-color: #c1121f;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .cantidad-input {

@@ -12,23 +12,29 @@ function cargarItemsCarrito() {
     const emptyCartMessage = document.getElementById('empty-cart-message');
     const cartSummary = document.querySelector('.cart-summary');
     
+    if (!cartItemsContainer) {
+        console.error('Container cart-items no encontrado');
+        return;
+    }
+    
+    // Limpiar completamente el contenedor
+    cartItemsContainer.innerHTML = '';
+    
     if (cart.length === 0) {
         if (emptyCartMessage) emptyCartMessage.style.display = 'block';
         if (cartSummary) cartSummary.style.display = 'none';
         return;
     }
+    
     if (emptyCartMessage) emptyCartMessage.style.display = 'none'; // Ocultar mensaje de carrito vacío
     if (cartSummary) cartSummary.style.display = 'block'; // Mostrar resumen del carrito
-    
-    // Limpiar contenedor
-    while (cartItemsContainer.firstChild) {
-        cartItemsContainer.removeChild(cartItemsContainer.firstChild);
-    }
     
     // Crear items usando template
     cart.forEach(item => {
         const itemElement = crearElementoCarrito(item);
-        cartItemsContainer.appendChild(itemElement);
+        if (itemElement) {
+            cartItemsContainer.appendChild(itemElement);
+        }
     });
     
     actualizarResumenCarrito();

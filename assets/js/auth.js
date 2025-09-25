@@ -3,11 +3,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
     if (usuarioActual && usuarioActual.logueado) {
-        const currentPage = window.locatio// Función para validar email (específica para páginas de autenticación)
-function validarEmail(email) {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-}hname.split("/").pop(); // obtiene el nombre del archivo actual
+        const currentPage = window.location.pathname.split("/").pop(); // obtiene el nombre del archivo actual
 
         // Redirigir según el rol del usuario
         if (usuarioActual.rol === "admin" && currentPage !== "admin.html") {

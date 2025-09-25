@@ -20,7 +20,7 @@ const productsData = [
         id: 1,
         nombre: "Zapatos Oxford Clásicos",
         precio: 89990,
-        imagen: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=300&h=300&fit=crop",
+        imagen: "./assets/img/productos/zapatosoxfordclasicos.jpg",
         categoria: "hombre",
         descripcion: "Elegantes zapatos Oxford de cuero genuino para hombre",
         stock: 15
@@ -29,7 +29,7 @@ const productsData = [
         id: 2,
         nombre: "Tacones Elegantes",
         precio: 75990,
-        imagen: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=300&h=300&fit=crop",
+        imagen: "./assets/img/productos/taconeselegantes.jpg",
         categoria: "mujer",
         descripcion: "Tacones altos elegantes para ocasiones especiales",
         stock: 8
@@ -38,7 +38,7 @@ const productsData = [
         id: 3,
         nombre: "Zapatillas Deportivas",
         precio: 65990,
-        imagen: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=300&fit=crop",
+        imagen: "./assets/img/productos/zapatillasdeportivas.jpg",
         categoria: "deportivos",
         descripcion: "Zapatillas deportivas cómodas para running",
         stock: 20
@@ -47,7 +47,7 @@ const productsData = [
         id: 4,
         nombre: "Botas de Cuero",
         precio: 125990,
-        imagen: "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=300&h=300&fit=crop",
+        imagen: "./assets/img/productos/botasdecuero.jpg",
         categoria: "hombre",
         descripcion: "Botas robustas de cuero para uso diario",
         stock: 12
@@ -56,7 +56,7 @@ const productsData = [
         id: 5,
         nombre: "Sandalias de Verano",
         precio: 45990,
-        imagen: "https://images.unsplash.com/photo-1515347619252-60a4bf4fff4f?w=300&h=300&fit=crop",
+        imagen: "./assets/img/productos/sandaliasdeverano.jpg",
         categoria: "mujer",
         descripcion: "Sandalias cómodas para el verano",
         stock: 25
@@ -65,25 +65,25 @@ const productsData = [
         id: 6,
         nombre: "Zapatos Escolares",
         precio: 35990,
-        imagen: "https://images.unsplash.com/photo-1551107696-a4b57a9d33b6?w=300&h=300&fit=crop",
+        imagen: "./assets/img/productos/zapatosescolares.jpg",
         categoria: "niños",
         descripcion: "Zapatos escolares resistentes y cómodos",
-        stock: 0
+        stock: 15
     },
     {
         id: 7,
         nombre: "Zapatillas Casual",
         precio: 55990,
-        imagen: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=300&h=300&fit=crop",
+        imagen: "./assets/img/productos/zapatillascasual.jpg",
         categoria: "mujer",
         descripcion: "Zapatillas casuales para uso diario",
         stock: 18
     },
     {
         id: 8,
-        name: "Zapatos de Vestir",
+        nombre: "Zapatos de Vestir",
         precio: 95990,
-        image: "https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=300&h=300&fit=crop",
+        imagen: "./assets/img/productos/zapatosdevestir.jpg",
         categoria: "hombre",
         descripcion: "Zapatos formales para eventos especiales",
         stock: 10
@@ -92,17 +92,12 @@ const productsData = [
 
 // Inicializar productos
 function inicializarProductos() {
-
-    // Cargar productos desde localStorage si existen, sino usar datos por defecto
-    let products = JSON.parse(localStorage.getItem('productos')) || productsData;
-
+    // Forzar actualización de productos para esta sesión
+    // Esto asegura que se carguen los datos más recientes
+    localStorage.setItem('productos', JSON.stringify(productsData));
     
-    // Si no hay productos en localStorage, guardar los datos por defecto
-    if (!localStorage.getItem('productos')) {
-
-        localStorage.setItem('productos', JSON.stringify(productsData));
-        products = productsData;
-    }
+    // Cargar productos desde localStorage
+    let products = JSON.parse(localStorage.getItem('productos')) || productsData;
     
     mostrarProductos(products);
 }

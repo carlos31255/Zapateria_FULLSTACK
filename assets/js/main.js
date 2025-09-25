@@ -139,23 +139,6 @@ function logout() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Inicialización
 document.addEventListener('DOMContentLoaded', function() {
     // Inicializar datos por defecto si no existen
