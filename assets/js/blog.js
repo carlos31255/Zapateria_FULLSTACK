@@ -13,7 +13,7 @@ const articulosBlog = [
         resumen: "Los estilos que marcarán esta temporada.",
         categoria: "tendencias",
         fecha: "2025-09-20",
-        imagen: "./assets/img/tendenciasotono2025.avif",
+        imagen: "./assets/img/blog/tendenciasotono2025.avif",
         contenido: "Este otoño trae botines con texturas, colores tierra y materiales sustentables que están dominando las tendencias de calzado."
     },
     {
@@ -22,7 +22,7 @@ const articulosBlog = [
         resumen: "Mantén tus zapatos como nuevos.",
         categoria: "cuidado",
         fecha: "2025-09-18",
-        imagen: "./assets/img/cuidarzapatoscuero.avif",
+        imagen: "./assets/img/blog/cuidarzapatoscuero.avif",
         contenido: "El cuero requiere cuidados específicos. Limpia, nutre y protege tus zapatos regularmente para que duren años."
     },
     {
@@ -31,7 +31,7 @@ const articulosBlog = [
         resumen: "Los básicos que no pueden faltar.",
         categoria: "consejos",
         fecha: "2025-09-15",
-        imagen: "./assets/img/zapatosesenciales.avif",
+        imagen: "./assets/img/blog/zapatosesenciales.avif",
         contenido: "Sneakers blancos, zapatos oxford, botines versátiles, sandalias cómodas y zapatos deportivos. Estos cinco tipos cubren todas las ocasiones."
     },
     {
@@ -40,7 +40,7 @@ const articulosBlog = [
         resumen: "Aprende las reglas básicas del matching.",
         categoria: "estilo",
         fecha: "2025-09-12",
-        imagen: "./assets/img/combinarestilo.avif",
+        imagen: "./assets/img/blog/combinarestilo.avif",
         contenido: "La combinación correcta de zapatos puede transformar cualquier outfit. Conoce las reglas fundamentales y cuándo romperlas."
     }
 ];

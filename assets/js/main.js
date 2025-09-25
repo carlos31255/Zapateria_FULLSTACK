@@ -11,9 +11,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const menuNav = document.querySelector('.navbar ul');
     
     if (botonMenuMovil && menuNav) {
-        botonMenuMovil.addEventListener('click', function() {
+        botonMenuMovil.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             menuNav.classList.toggle('active');
-            console.log('Toggle de menú presionado'); // Debug
         });
     }
     
@@ -25,31 +26,18 @@ document.addEventListener('DOMContentLoaded', function() {
             const dropdown = document.querySelector('.user-dropdown');
             if (dropdown) {
                 dropdown.classList.toggle('active');
-                console.log('Dropdown del usuario toggled');
-            } else {
-                console.error('No se encontró el elemento .user-dropdown');
             }
         });
     }
+});
+
+// Cerrar dropdown cuando se hace clic fuera
+document.addEventListener('click', function(e) {
+    const dropdown = document.querySelector('.user-dropdown');
+    const botonMenu = document.querySelector('.user-menu-btn');
     
-    // Cerrar dropdown al hacer clic fuera
-    document.addEventListener('click', function(e) {
-        const userMenu = document.querySelector('.user-menu');
-        const dropdown = document.querySelector('.user-dropdown');
-        
-        if (userMenu && dropdown && !userMenu.contains(e.target)) {
-            dropdown.classList.remove('active');
-        }
-    });
-    
-    // Mensaje de bienvenida en desarrollo
-    if (esModoDesarrollo()) {
-        setTimeout(() => {
-            console.log('🚀 === MODO DESARROLLO ACTIVADO ===');
-            console.log('💻 Ejecuta ayudaTesting() para ver todas las funciones disponibles');
-            console.log('📦 Carrito actual:', (JSON.parse(localStorage.getItem('carrito')) || []).length, 'items');
-            console.log('🔧 Todas las funciones disponibles solo por consola (F12)');
-        }, 1000);
+    if (dropdown && botonMenu && !botonMenu.contains(e.target)) {
+        dropdown.classList.remove('active');
     }
 });
 
@@ -75,6 +63,12 @@ function actualizarUIAutenticacion() {
         if (vendedorLink) {
             vendedorLink.style.display = (usuarioActual.rol === 'vendedor' || usuarioActual.rol === 'admin') ? 'block' : 'none';
         }
+        
+        // Configurar event listener del dropdown DESPUÉS de mostrar el menú
+        setTimeout(() => {
+            configurarDropdownUsuario();
+        }, 10);
+        
     } else {
         // Ocultar menú de usuario y mostrar botón de login
         if (menuUsuario) menuUsuario.style.display = 'none';
@@ -83,6 +77,25 @@ function actualizarUIAutenticacion() {
         // Ocultar enlaces de admin y vendedor
         if (adminLink) adminLink.style.display = 'none';
         if (vendedorLink) vendedorLink.style.display = 'none';
+    }
+}
+
+// Función para configurar el dropdown del usuario
+function configurarDropdownUsuario() {
+    const botonMenuUsuario = document.querySelector('.user-menu-btn');
+    if (botonMenuUsuario) {
+        // Remover event listeners anteriores clonando el elemento
+        const nuevoBoton = botonMenuUsuario.cloneNode(true);
+        botonMenuUsuario.parentNode.replaceChild(nuevoBoton, botonMenuUsuario);
+        
+        // Agregar nuevo event listener
+        nuevoBoton.addEventListener('click', function(e) {
+            e.preventDefault();
+            const dropdown = document.querySelector('.user-dropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('active');
+            }
+        });
     }
 }
 
@@ -106,13 +119,7 @@ function cerrarSesion() {
     const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
     
     if (usuarioActual) {
-        console.log(`Cerrando sesión del usuario: ${usuarioActual.nombre} (${usuarioActual.email})`);
-        
-        // Confirmación opcional (comentada para UX más fluida)
-        // if (!confirm(`¿Deseas cerrar la sesión de ${usuarioActual.nombre}?`)) return;
-        
         localStorage.removeItem('usuarioActual');
-        console.log('Sesión cerrada exitosamente');
         
         // Actualizar UI antes de redirigir
         actualizarUIAutenticacion();
@@ -122,7 +129,6 @@ function cerrarSesion() {
             window.location.href = 'index.html';
         }, 100);
     } else {
-        console.log('No hay sesión activa para cerrar');
         window.location.href = 'index.html';
     }
 }
@@ -132,243 +138,6 @@ function logout() {
     cerrarSesion();
 }
 
-// Función auxiliar para debugging - limpiar sesión
-function limpiarSesion() {
-    localStorage.removeItem('usuarioActual');
-    actualizarUIAutenticacion();
-    console.log('Sesión limpiada - página recargada');
-}
-
-// ===== FUNCIONES DE DEBUGGING Y TESTING =====
-
-// Limpiar solo el carrito
-function limpiarCarrito() {
-    localStorage.removeItem('carrito');
-    actualizarContadorCarrito();
-    console.log('✅ Carrito limpiado');
-    
-    // Si estamos en la página del carrito, recargar los items
-    if (typeof cargarItemsCarrito === 'function') {
-        cargarItemsCarrito();
-    }
-    
-    return 'Carrito limpiado exitosamente';
-}
-
-// Ver contenido del carrito
-function verCarrito() {
-    const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    console.log('📦 Contenido del carrito:', carrito);
-    console.log('📊 Número de items:', carrito.length);
-    console.log('💰 Total items:', carrito.reduce((total, item) => total + (item.cantidad || 0), 0));
-    return carrito;
-}
-
-// Limpiar TODA la sesión (carrito + usuario)
-function limpiarSesionCompleta() {
-    localStorage.removeItem('carrito');
-    localStorage.removeItem('usuarioActual');
-    localStorage.removeItem('usuarios'); // Lista de usuarios registrados
-    localStorage.removeItem('productos'); // Productos personalizados
-    
-    actualizarContadorCarrito();
-    actualizarUIAutenticacion();
-    
-    console.log('🧹 Sesión completa limpiada');
-    console.log('- Carrito: eliminado');
-    console.log('- Usuario actual: eliminado');
-    console.log('- Usuarios registrados: eliminados');
-    console.log('- Productos personalizados: eliminados');
-    
-    return 'Sesión completa limpiada';
-}
-
-// Limpiar TODO el localStorage
-function limpiarTodoLocalStorage() {
-    const confirmacion = confirm('⚠️ ADVERTENCIA: Esto eliminará TODOS los datos del localStorage. ¿Continuar?');
-    
-    if (confirmacion) {
-        localStorage.clear();
-        actualizarContadorCarrito();
-        actualizarUIAutenticacion();
-        
-        console.log('🗑️ TODO el localStorage ha sido limpiado');
-        console.log('Se recomienda recargar la página');
-        
-        return 'localStorage completamente limpiado';
-    } else {
-        console.log('❌ Operación cancelada por el usuario');
-        return 'Operación cancelada';
-    }
-}
-
-// Ver TODO el contenido del localStorage
-function verTodoLocalStorage() {
-    console.log('🔍 === CONTENIDO COMPLETO DEL LOCALSTORAGE ===');
-    
-    if (localStorage.length === 0) {
-        console.log('📭 localStorage está vacío');
-        return {};
-    }
-    
-    const datos = {};
-    for (let i = 0; i < localStorage.length; i++) {
-        const clave = localStorage.key(i);
-        try {
-            const valor = JSON.parse(localStorage.getItem(clave));
-            datos[clave] = valor;
-            console.log(`📋 ${clave}:`, valor);
-        } catch (e) {
-            // Si no es JSON válido, mostrar como string
-            const valor = localStorage.getItem(clave);
-            datos[clave] = valor;
-            console.log(`📄 ${clave} (string):`, valor);
-        }
-    }
-    
-    console.log('📊 Total de claves:', localStorage.length);
-    return datos;
-}
-
-// Resetear a datos de prueba
-function cargarDatosPrueba() {
-    // Limpiar primero
-    limpiarSesionCompleta();
-    
-    // Carrito de prueba
-    const carritoPrueba = [
-        {
-            id: 1,
-            nombre: "Zapatos Oxford Clásicos",
-            precio: 89990,
-            imagen: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=300&h=300&fit=crop",
-            cantidad: 2
-        },
-        {
-            id: 2,
-            nombre: "Tacones Elegantes",
-            precio: 75990,
-            imagen: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=300&h=300&fit=crop",
-            cantidad: 1
-        }
-    ];
-    
-    // Usuario de prueba
-    const usuarioPrueba = {
-        nombre: "Usuario Test",
-        email: "test@ejemplo.com",
-        rol: "cliente",
-        logueado: true
-    };
-    
-    localStorage.setItem('carrito', JSON.stringify(carritoPrueba));
-    localStorage.setItem('usuarioActual', JSON.stringify(usuarioPrueba));
-    
-    // Actualizar UI inmediatamente
-    actualizarContadorCarrito();
-    actualizarUIAutenticacion();
-    
-    // Verificar que el menú se muestre
-    setTimeout(() => {
-        const menuUsuario = document.getElementById('user-menu');
-        const nombreUsuario = document.getElementById('user-name');
-        
-        console.log('🧪 Datos de prueba cargados:');
-        console.log('- Carrito con 2 productos');
-        console.log('- Usuario test logueado');
-        console.log('- Menú de usuario visible:', menuUsuario ? menuUsuario.style.display !== 'none' : 'elemento no encontrado');
-        console.log('- Nombre mostrado:', nombreUsuario ? nombreUsuario.textContent : 'elemento no encontrado');
-        console.log('💡 Haz clic en el nombre del usuario (esquina superior derecha) para ver el dropdown');
-    }, 100);
-    
-    // Si estamos en la página del carrito, recargar
-    if (typeof cargarItemsCarrito === 'function') {
-        cargarItemsCarrito();
-    }
-    
-    return 'Datos de prueba cargados exitosamente';
-}
-
-// Mostrar ayuda de testing
-function ayudaTesting() {
-    console.log('🔧 === FUNCIONES DE TESTING DISPONIBLES ===');
-    console.log('');
-    console.log('📦 CARRITO:');
-    console.log('  limpiarCarrito()           - Limpia solo el carrito');
-    console.log('  verCarrito()               - Muestra contenido del carrito');
-    console.log('  agregarProductoPrueba()    - Agrega un producto de prueba');
-    console.log('');
-    console.log('👤 SESIÓN:');
-    console.log('  limpiarSesion()            - Limpia solo sesión de usuario');
-    console.log('  limpiarSesionCompleta()    - Limpia carrito + usuario + datos');
-    console.log('');
-    console.log('🗄️ LOCALSTORAGE:');
-    console.log('  verTodoLocalStorage()      - Muestra todo el localStorage');
-    console.log('  limpiarTodoLocalStorage()  - Limpia TODO (con confirmación)');
-    console.log('');
-    console.log('🧪 TESTING:');
-    console.log('  cargarDatosPrueba()        - Carga datos de prueba');
-    console.log('  probarSistemaCarrito()     - Prueba el sistema de carrito');
-    console.log('  probarMenuUsuario()        - Prueba el menú de usuario y logout');
-    console.log('  mostrarMenuUsuario()       - Fuerza la visualización del menú');
-    console.log('  ayudaTesting()             - Muestra esta ayuda');
-    console.log('');
-    console.log('🎨 PANEL VISUAL:');
-    console.log('  - Botón � en esquina superior derecha (solo en desarrollo)');
-    console.log('  - Panel con botones para funciones más usadas');
-    console.log('');
-    console.log('⚡ ATAJOS RÁPIDOS DESDE CONSOLA:');
-    console.log('  localStorage.clear()       - Limpia todo inmediatamente');
-    console.log('  location.reload()          - Recarga la página');
-    console.log('');
-    console.log('�💡 TIP: Usa F12 -> Console para ejecutar estas funciones');
-    console.log('🎯 RECOMENDADO: Siempre ejecuta verCarrito() antes de limpiar');
-}
-
-function agregarProductoPrueba() {
-    const productoPrueba = {
-        id: 999,
-        nombre: "Producto de Prueba",
-        precio: 15000,
-        imagen: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=300&fit=crop",
-        stock: 10
-    };
-    
-    // Usar el sistema unificado
-    if (typeof agregarAlCarritoProducto === 'function') {
-        console.log('Usando agregarAlCarritoProducto de productos.js');
-        agregarAlCarritoProducto(productoPrueba);
-    } else {
-        console.log('Función agregarAlCarritoProducto no disponible, agregando manualmente');
-        let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-        carrito.push({
-            ...productoPrueba,
-            cantidad: 1
-        });
-        localStorage.setItem('carrito', JSON.stringify(carrito));
-        actualizarContadorCarrito();
-    }
-}
-
-// Función para probar que el sistema funciona en ambas páginas
-function probarSistemaCarrito() {
-    console.log('=== PRUEBA DEL SISTEMA DE CARRITO ===');
-    console.log('Página actual:', window.location.pathname);
-    console.log('¿Existe agregarAlCarritoProducto?', typeof agregarAlCarritoProducto === 'function');
-    console.log('¿Existe mostrarMensajeAgregarCarrito?', typeof mostrarMensajeAgregarCarrito === 'function');
-    console.log('¿Existe crearTarjetaProducto?', typeof crearTarjetaProducto === 'function');
-    
-    const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    console.log('Items en carrito:', carrito.length);
-    console.log('Contenido del carrito:', carrito);
-    
-    return {
-        agregarAlCarritoProducto: typeof agregarAlCarritoProducto === 'function',
-        mostrarMensaje: typeof mostrarMensajeAgregarCarrito === 'function',
-        crearTarjeta: typeof crearTarjetaProducto === 'function',
-        itemsCarrito: carrito.length
-    };
-}
 
 
 
@@ -376,13 +145,14 @@ function probarSistemaCarrito() {
 
 
 
-// Detectar si estamos en modo desarrollo
-function esModoDesarrollo() {
-    return window.location.hostname === 'localhost' || 
-           window.location.hostname === '127.0.0.1' || 
-           window.location.port === '5500' ||
-           window.location.protocol === 'file:';
-}
+
+
+
+
+
+
+
+
 
 
 
@@ -393,32 +163,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     actualizarUIAutenticacion();
     actualizarContadorCarrito();
+});
 
-    // Menú móvil
-    const botonMenuMovil = document.querySelector('.mobile-menu-btn');
-    const menuNav = document.querySelector('.navbar ul');
-    if (botonMenuMovil && menuNav) {
-        botonMenuMovil.addEventListener('click', function() {
-            menuNav.classList.toggle('active');
-        });
-    }
-
-    // Dropdown usuario
-    const botonMenuUsuario = document.querySelector('.user-menu-btn');
-    if (botonMenuUsuario) {
-        botonMenuUsuario.addEventListener('click', function() {
-            document.querySelector('.user-dropdown').classList.toggle('active');
-        });
-    }
+// Cerrar dropdown cuando se hace clic fuera
+document.addEventListener('click', function(e) {
+    const dropdown = document.querySelector('.user-dropdown');
+    const botonMenu = document.querySelector('.user-menu-btn');
     
-    // Mensaje de bienvenida en desarrollo
-    if (esModoDesarrollo()) {
-        setTimeout(() => {
-            console.log('🚀 === MODO DESARROLLO ACTIVADO ===');
-            console.log('💻 Ejecuta ayudaTesting() para ver todas las funciones disponibles');
-            console.log('📦 Carrito actual:', (JSON.parse(localStorage.getItem('carrito')) || []).length, 'items');
-            console.log('🔧 Todas las funciones disponibles solo por consola (F12)');
-        }, 1000);
+    if (dropdown && botonMenu && !botonMenu.contains(e.target)) {
+        dropdown.classList.remove('active');
     }
 });
     
@@ -546,101 +299,7 @@ function inicializarDatosPorDefecto() {
         ];
         
         localStorage.setItem('productos', JSON.stringify(productosPorDefecto));
-        console.log('✅ Productos por defecto inicializados:', productosPorDefecto.length, 'productos');
+
     }
 }
 
-// Función para forzar la visualización del menú (útil para debugging)
-function mostrarMenuUsuario() {
-    const menuUsuario = document.getElementById('user-menu');
-    const botonLogin = document.getElementById('login-btn');
-    const nombreUsuario = document.getElementById('user-name');
-    
-    if (menuUsuario) {
-        menuUsuario.style.display = 'block';
-        console.log('✅ Menú de usuario forzado a mostrar');
-    }
-    
-    if (botonLogin) {
-        botonLogin.style.display = 'none';
-        console.log('✅ Botón de login ocultado');
-    }
-    
-    if (nombreUsuario) {
-        nombreUsuario.textContent = 'Usuario Test';
-        console.log('✅ Nombre de usuario establecido');
-    }
-    
-    return 'Menú forzado a mostrar - haz clic en el nombre de usuario';
-}
-
-// Función de prueba para el menú de usuario
-function probarMenuUsuario() {
-    console.log('=== PRUEBA DEL MENÚ DE USUARIO ===');
-    
-    const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
-    console.log('Usuario actual:', usuarioActual);
-    
-    // Verificar elementos DOM
-    const elementos = {
-        menuUsuario: document.getElementById('user-menu'),
-        nombreUsuario: document.getElementById('user-name'),
-        botonLogin: document.getElementById('login-btn'),
-        botonMenuUsuario: document.querySelector('.user-menu-btn'),
-        dropdown: document.querySelector('.user-dropdown'),
-        adminLink: document.getElementById('admin-link'),
-        vendedorLink: document.getElementById('vendedor-link')
-    };
-    
-    console.log('Elementos encontrados:', {
-        menuUsuario: !!elementos.menuUsuario,
-        nombreUsuario: !!elementos.nombreUsuario,
-        botonLogin: !!elementos.botonLogin,
-        botonMenuUsuario: !!elementos.botonMenuUsuario,
-        dropdown: !!elementos.dropdown,
-        adminLink: !!elementos.adminLink,
-        vendedorLink: !!elementos.vendedorLink
-    });
-    
-    // Verificar visibilidad según estado de sesión
-    if (usuarioActual && usuarioActual.logueado) {
-        console.log('✅ Usuario logueado detectado');
-        console.log(`Nombre: ${usuarioActual.nombre}, Rol: ${usuarioActual.rol}`);
-        
-        if (elementos.menuUsuario && elementos.menuUsuario.style.display !== 'none') {
-            console.log('✅ Menú de usuario visible');
-        } else {
-            console.log('❌ Menú de usuario no visible');
-        }
-        
-        if (elementos.botonLogin && elementos.botonLogin.style.display === 'none') {
-            console.log('✅ Botón de login oculto correctamente');
-        } else {
-            console.log('❌ Botón de login debería estar oculto');
-        }
-    } else {
-        console.log('ℹ️ No hay usuario logueado');
-        
-        if (elementos.botonLogin && elementos.botonLogin.style.display !== 'none') {
-            console.log('✅ Botón de login visible');
-        } else {
-            console.log('❌ Botón de login no visible');
-        }
-    }
-    
-    console.log('=== PRUEBA COMPLETADA ===');
-    console.log('💡 Para probar el menú:');
-    console.log('1. Ejecuta cargarDatosPrueba() para simular login');
-    console.log('2. Haz clic en el nombre de usuario en la esquina superior derecha');
-    console.log('3. Verifica que aparezca el dropdown con "Cerrar Sesión"');
-    
-    return {
-        usuarioActual,
-        elementos,
-        funcionesDisponibles: {
-            actualizarUIAutenticacion: typeof actualizarUIAutenticacion === 'function',
-            cerrarSesion: typeof cerrarSesion === 'function',
-            logout: typeof logout === 'function'
-        }
-    };
-}

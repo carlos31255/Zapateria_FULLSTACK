@@ -161,38 +161,10 @@ probarSistemaCarrito()     // Prueba el sistema de carrito
 ayudaTesting()             // Muestra ayuda completa
 ```
 
-### 🛡️ **Usuarios por Defecto**
-| Rol | Email | Contraseña | Descripción |
-|-----|-------|------------|-------------|
-| Admin | admin@duoc.cl | admin123 | Acceso completo al sistema |
-| Vendedor | vendedor@duoc.cl | vend123 | Vista readonly de productos/pedidos |
-| Cliente | cliente@gmail.com | cli123 | Funcionalidades de compra |
+
 
 ## 🚀 Instalación y Uso
-
-### 📋 **Prerrequisitos**
-- Navegador web moderno (Chrome, Firefox, Safari, Edge)
-- Live Server o servidor web local
-
-### 🛠️ **Instalación**
-1. **Clona o descarga el proyecto**
-   ```bash
-   git clone [URL-del-repositorio]
-   cd Zapateria_FULLSTACK
-   ```
-
-2. **Configura el servidor local**
-   - **Opción 1**: VS Code + Live Server extension
-   - **Opción 2**: Python: `python -m http.server 8000`
-   - **Opción 3**: Node.js: `npx http-server`
-
-3. **Abre en navegador**
-   ```
-   http://localhost:5500  (Live Server)
-   http://localhost:8000  (Python)
-   http://localhost:8080  (Node.js)
-   ```
-
+ 
 ### 🔧 **Primer Uso**
 1. El sistema inicializa automáticamente 8 productos por defecto
 2. Se crean usuarios por defecto para testing

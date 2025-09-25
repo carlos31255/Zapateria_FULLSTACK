@@ -92,14 +92,14 @@ const productsData = [
 
 // Inicializar productos
 function inicializarProductos() {
-    console.log('Inicializando productos...');
+
     // Cargar productos desde localStorage si existen, sino usar datos por defecto
     let products = JSON.parse(localStorage.getItem('productos')) || productsData;
-    console.log('Productos cargados:', products);
+
     
     // Si no hay productos en localStorage, guardar los datos por defecto
     if (!localStorage.getItem('productos')) {
-        console.log('Guardando productos por defecto en localStorage');
+
         localStorage.setItem('productos', JSON.stringify(productsData));
         products = productsData;
     }
@@ -132,7 +132,6 @@ function mostrarProductos(products) {
 
 // Crear tarjeta de producto
 function crearTarjetaProducto(product) {
-    console.log('Creando tarjeta para producto:', product);
     const card = document.createElement('div');
     card.className = 'product-card';
     
@@ -195,7 +194,6 @@ function crearTarjetaProducto(product) {
     title.className = 'product-title';
     const nombreProducto = product.nombre || product.name || 'Producto sin nombre';
     title.textContent = nombreProducto;
-    console.log('Creando tarjeta - Nombre del producto:', nombreProducto, 'Producto completo:', product);
     
     const description = document.createElement('p');
     description.className = 'product-description';
@@ -232,7 +230,6 @@ function crearTarjetaProducto(product) {
 
 // Agregar producto al carrito
 function agregarAlCarritoProducto(product) {
-    console.log('Agregando producto al carrito:', product);
     
     if (product.stock <= 0) {
         alert('Este producto no tiene stock disponible');
@@ -260,7 +257,6 @@ function agregarAlCarritoProducto(product) {
     
     // Guardar carrito actualizado
     localStorage.setItem('carrito', JSON.stringify(cart));
-    console.log('Carrito guardado:', cart);
     
     // Actualizar contador del carrito
     actualizarContadorCarrito();
@@ -365,28 +361,22 @@ function aplicarFiltros() {
 
 // Inicializar productos destacados en el index
 function inicializarProductosDestacados() {
-    console.log('Inicializando productos destacados...');
     let products = JSON.parse(localStorage.getItem('productos')) || productsData;
-    console.log('Productos para destacados:', products);
     
     // Si no hay productos en localStorage, guardar los datos por defecto
     if (!localStorage.getItem('productos')) {
-        console.log('Guardando productos por defecto para destacados');
         localStorage.setItem('productos', JSON.stringify(productsData));
         products = productsData;
     }
     
     // Mostrar solo los primeros 4 productos como destacados
     const featuredProducts = products.slice(0, 4);
-    console.log('Productos destacados seleccionados:', featuredProducts);
     mostrarProductosDestacados(featuredProducts);
 }
 
 // Mostrar productos destacados en el index
 function mostrarProductosDestacados(products) {
-    console.log('Mostrando productos destacados en el DOM...');
     const container = document.getElementById('featured-products');
-    console.log('Contenedor encontrado:', !!container);
     
     if (!container) {
         console.error('Contenedor featured-products no encontrado');
@@ -399,10 +389,8 @@ function mostrarProductosDestacados(products) {
     }
     
     products.forEach((product, index) => {
-        console.log(`Creando tarjeta ${index + 1} para producto:`, product);
         const productCard = crearTarjetaProducto(product);
         container.appendChild(productCard);
     });
     
-    console.log('Productos destacados renderizados correctamente');
 }

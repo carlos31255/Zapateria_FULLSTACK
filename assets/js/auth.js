@@ -402,7 +402,7 @@ function inicializarUsuariosPorDefecto() {
     
     // Guardar usuarios por defecto
     localStorage.setItem('usuarios', JSON.stringify(usuariosPorDefecto));
-    console.log('Usuarios por defecto inicializados:', usuariosPorDefecto);
+
 }
 
 // Llamar la función de inicialización cuando se carga la página

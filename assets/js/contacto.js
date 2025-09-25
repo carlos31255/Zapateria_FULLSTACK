@@ -108,9 +108,7 @@ function validarFormularioContacto() {
         }
         
         // Redirigir al inicio después de 1 segundo
-        console.log('Redirigiendo al inicio en 1 segundo...');
         setTimeout(() => {
-            console.log('Ejecutando redirección...');
             window.location.href = 'index.html';
         }, 1000);
     }
