@@ -25,10 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    //Cargar productos destacados
-    if (document.getElementById('featured-products')) {
-        cargarProductosDestacados();
-    }
+
 });
 
 // Actualizar la UI según el estado de autenticación
@@ -51,7 +48,7 @@ function actualizarUIAutenticacion() {
 // Actualizar contador del carrito
 function actualizarContadorCarrito() {
     const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    const totalItems = carrito.reduce((total, item) => total + item.cantidad, 0);
+    const totalItems = carrito.reduce((total, item) => total + (item.quantity || item.cantidad || 0), 0);
     document.querySelectorAll('.cart-count').forEach(el => {
         el.textContent = totalItems;
     });
@@ -74,90 +71,11 @@ function logout() {
     cerrarSesion();
 }
 
-// Cargar productos destacados
-// Cargar productos destacados (los primeros 4 desde localStorage)
-// Cargar productos destacados (primeros 4)
-// Cargar productos destacados (primeros 4)
-function cargarProductosDestacados() {
-    const contenedor = document.getElementById('featured-products');
-    let productos = JSON.parse(localStorage.getItem('productos')) || [];
-
-    if (productos.length === 0) {
-        contenedor.innerHTML = "<p>No hay productos disponibles.</p>";
-        return;
-    }
-
-    const destacados = productos.slice(0, 4);
-    contenedor.innerHTML = destacados.map(p => `
-        <div class="product-card">
-            <img src="${p.imagen || 'assets/img/default.jpg'}" alt="${p.nombre}" class="product-img">
-            <div class="product-info">
-                <h3 class="product-title">${p.nombre}</h3>
-                <p class="product-desc">${p.descripcion || "Sin descripción"}</p>
-                <p class="product-price">$${p.precio.toLocaleString('es-CL')}</p>
-                <p class="product-stock ${p.stock > 0 ? 'in-stock' : 'out-of-stock'}">
-                    ${p.stock > 0 ? `Stock disponible: ${p.stock}` : "Sin stock"}
-                </p>
-                <button class="add-to-cart" 
-                        data-id="${p.id}" 
-                        data-name="${p.nombre}" 
-                        data-price="${p.precio}" 
-                        data-img="${p.imagen}" 
-                        ${p.stock <= 0 ? "disabled" : ""}>
-                    ${p.stock > 0 ? "Añadir al Carrito" : "Agotado"}
-                </button>
-            </div>
-        </div>
-    `).join('');
-
-    // Event listeners para añadir al carrito
-    document.querySelectorAll('.add-to-cart').forEach(btn => {
-        btn.addEventListener('click', function() {
-            agregarAlCarrito(
-                this.dataset.id, 
-                this.dataset.name, 
-                parseInt(this.dataset.price), 
-                this.dataset.img
-            );
-        });
-    });
-}
 
 
 
-// Cargar todos los productos (para productos.html)
-function cargarTodosLosProductos() {
-    const contenedor = document.getElementById('all-products');
-    let productos = JSON.parse(localStorage.getItem('productos')) || [];
 
-    if (!contenedor) return;
 
-    if (productos.length === 0) {
-        contenedor.innerHTML = "<p>No hay productos disponibles.</p>";
-        return;
-    }
-
-    contenedor.innerHTML = productos.map(producto => `
-        <div class="product-card">
-            <img src="${producto.imagen || 'assets/img/default.jpg'}" alt="${producto.nombre}" class="product-img">
-            <div class="product-info">
-                <h3 class="product-title">${producto.nombre}</h3>
-                <p class="product-price">$${producto.precio.toLocaleString('es-CL')}</p>
-                <button class="add-to-cart" data-id="${producto.id}" data-name="${producto.nombre}" data-price="${producto.precio}">Añadir al Carrito</button>
-            </div>
-        </div>
-    `).join('');
-
-    // Agregar event listeners a los botones de añadir al carrito
-    document.querySelectorAll('.add-to-cart').forEach(boton => {
-        boton.addEventListener('click', function() {
-            const id = this.dataset.id;
-            const nombre = this.dataset.name;
-            const precio = parseInt(this.dataset.price);
-            agregarAlCarrito(id, nombre, precio);
-        });
-    });
-}
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', function() {
@@ -181,38 +99,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Cargar productos destacados en index.html
-    if (document.getElementById('featured-products')) {
-        cargarProductosDestacados();
-    }
-
-    // Cargar todos los productos en productos.html
-    if (document.getElementById('all-products')) {
-        cargarTodosLosProductos();
-    }
 });
-
     
-    contenedorProductosDestacados.innerHTML = productos.map(producto => `
-        <div class="product-card">
-            <img src="${producto.imagen}" alt="${producto.nombre}" class="product-img">
-            <div class="product-info">
-                <h3 class="product-title">${producto.nombre}</h3>
-                <p class="product-price">$${producto.precio.toLocaleString('es-CL')}</p>
-                <button class="add-to-cart" data-id="${producto.id}" data-name="${producto.nombre}" data-price="${producto.precio}">Añadir al Carrito</button>
-            </div>
-        </div>
-    `).join('');
-    
-    // Agregar event listeners a los botones de añadir al carrito
-    document.querySelectorAll('.add-to-cart').forEach(boton => {
-        boton.addEventListener('click', function() {
-            const id = this.dataset.id;
-            const nombre = this.dataset.name;
-            const precio = parseInt(this.dataset.price);
-            agregarAlCarrito(id, nombre, precio);
-        });
-    });
+    // Los botones add-to-cart ahora se generan dinámicamente en productos.js
 
 
 // Añadir producto al carrito
@@ -223,13 +112,13 @@ function agregarAlCarrito(id, nombre, precio) {
     const itemExistente = carrito.find(item => item.id === id);
     
     if (itemExistente) {
-        itemExistente.cantidad += 1;
+        itemExistente.quantity += 1;
     } else {
         carrito.push({
             id,
             nombre,
             precio,
-            cantidad: 1,
+            quantity: 1,
             imagen: `https://images.unsplash.com/photo-1560769629-975ec94e6a86?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`
         });
     }

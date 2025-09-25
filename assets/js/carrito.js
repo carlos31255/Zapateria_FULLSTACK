@@ -2,11 +2,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     loadCartItems();
     setupEventListeners();
+    updateCartCount();
 });
 
 // Cargar items del carrito
 function loadCartItems() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || []; // Obtener carrito del localStorage
+    const cart = JSON.parse(localStorage.getItem('carrito')) || []; // Obtener carrito del localStorage
     const cartItemsContainer = document.getElementById('cart-items'); // Contenedor de items    
     const emptyCartMessage = document.getElementById('empty-cart-message'); // Mensaje de carrito vacío
     const cartSummary = document.querySelector('.cart-summary'); // Resumen del carrito
@@ -23,10 +24,10 @@ function loadCartItems() {
     cartItemsContainer.innerHTML = cart.map(item => `
         <div class="cart-item" data-id="${item.id}">
             <div class="item-info">
-                <img src="${item.image}" alt="${item.name}" class="item-img">
+                <img src="${item.imagen || item.image}" alt="${item.nombre || item.name}" class="item-img">
                 <div class="item-details">
-                    <h3>${item.name}</h3>
-                    <p>$${item.price.toLocaleString('es-CL')}</p>
+                    <h3>${item.nombre || item.name}</h3>
+                    <p>$${(item.precio || item.price).toLocaleString('es-CL')}</p>
                 </div>
             </div>
             <div class="item-actions">
@@ -93,7 +94,7 @@ function setupEventListeners() {
         checkoutBtn.addEventListener('click', function() {
             alert('¡Gracias por tu compra! Serás redirigido al proceso de pago.');
             // Vaciar carrito y redirigir
-            localStorage.removeItem('cart');
+            localStorage.removeItem('carrito');
             window.location.href = 'index.html';
         });
     }
@@ -101,12 +102,12 @@ function setupEventListeners() {
 
 // Actualizar cantidad de un item en el carrito
 function updateCartItemQuantity(id, quantity) {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let cart = JSON.parse(localStorage.getItem('carrito')) || [];
     const item = cart.find(item => item.id === id);
     
     if (item) {
         item.quantity = quantity;
-        localStorage.setItem('cart', JSON.stringify(cart));
+        localStorage.setItem('carrito', JSON.stringify(cart));
         updateCartSummary();
         updateCartCount();
     }
@@ -114,21 +115,21 @@ function updateCartItemQuantity(id, quantity) {
 
 // Eliminar item del carrito
 function removeCartItem(id) {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let cart = JSON.parse(localStorage.getItem('carrito')) || [];
     cart = cart.filter(item => item.id !== id);
-    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem('carrito', JSON.stringify(cart));
     loadCartItems();
     updateCartCount();
 }
 
 // Actualizar resumen del carrito
 function updateCartSummary() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cart = JSON.parse(localStorage.getItem('carrito')) || [];
     const subtotalElement = document.getElementById('cart-subtotal');
     const shippingElement = document.getElementById('cart-shipping');
     const totalElement = document.getElementById('cart-total');
     
-    const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const subtotal = cart.reduce((total, item) => total + ((item.precio || item.price) * item.quantity), 0);
     const shipping = subtotal > 0 ? 5000 : 0; // Costo de envío fijo
     const total = subtotal + shipping;
     

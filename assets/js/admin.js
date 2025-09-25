@@ -6,16 +6,51 @@
 function cargarUsuarios() {
   const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
   const tbody = document.getElementById('usuarios-table');
-  tbody.innerHTML = usuarios.map(u => `
-    <tr>
-      <td>${u.nombre}</td>
-      <td>${u.email}</td>
-      <td><span class="badge ${obtenerClaseRol(u.rol)}">${u.rol}</span></td>
-      <td>${u.fechaCreacion ? new Date(u.fechaCreacion).toLocaleDateString() : 'No disponible'}</td>
-      <td><button class="btn btn-sm btn-danger" onclick="eliminarUsuario('${u.email}')">Eliminar</button></td>
-    </tr>
-  `).join('');
+  
+  // Limpiar la tabla primero
+  while (tbody.firstChild) {
+    tbody.removeChild(tbody.firstChild);
+  }
+
+  usuarios.forEach(u => {
+    const tr = document.createElement('tr');
+    
+    // Celda Nombre
+    const tdNombre = document.createElement('td');
+    tdNombre.textContent = u.nombre;
+    tr.appendChild(tdNombre);
+    
+    // Celda Email
+    const tdEmail = document.createElement('td');
+    tdEmail.textContent = u.email;
+    tr.appendChild(tdEmail);
+    
+    // Celda Rol
+    const tdRol = document.createElement('td');
+    const spanRol = document.createElement('span');
+    spanRol.className = `badge ${obtenerClaseRol(u.rol)}`;
+    spanRol.textContent = u.rol;
+    tdRol.appendChild(spanRol);
+    tr.appendChild(tdRol);
+    
+    // Celda Fecha
+    const tdFecha = document.createElement('td');
+    tdFecha.textContent = u.fechaCreacion ? new Date(u.fechaCreacion).toLocaleDateString() : 'No disponible';
+    tr.appendChild(tdFecha);
+    
+    // Celda Acciones
+    const tdAcciones = document.createElement('td');
+    const btnEliminar = document.createElement('button');
+    btnEliminar.className = 'btn btn-sm btn-danger';
+    btnEliminar.textContent = 'Eliminar';
+    btnEliminar.addEventListener('click', () => eliminarUsuario(u.email));
+    tdAcciones.appendChild(btnEliminar);
+    tr.appendChild(tdAcciones);
+    
+    tbody.appendChild(tr);
+  });
 }
+
 
 function obtenerClaseRol(rol) {
   switch(rol) {
@@ -161,17 +196,43 @@ function guardarProducto() {
 function cargarProductos() {
   const productos = JSON.parse(localStorage.getItem('productos')) || [];
   const tbody = document.getElementById('productos-table');
-  tbody.innerHTML = productos.map(p => `
-    <tr>
-      <td>${p.nombre}</td>
-      <td>$${p.precio.toLocaleString('es-CL')}</td>
-      <td>Stock: ${p.stock}</td>
-      <td>
-        <button class="btn btn-sm btn-danger" onclick="eliminarProducto(${p.id})">Eliminar</button>
-      </td>
-    </tr>
-  `).join('');
+  
+  // Limpiar la tabla primero
+  while (tbody.firstChild) {
+    tbody.removeChild(tbody.firstChild);
+  }
+
+  productos.forEach(p => {
+    const tr = document.createElement('tr');
+    
+    // Celda Nombre
+    const tdNombre = document.createElement('td');
+    tdNombre.textContent = p.nombre;
+    tr.appendChild(tdNombre);
+    
+    // Celda Precio
+    const tdPrecio = document.createElement('td');
+    tdPrecio.textContent = `$${p.precio.toLocaleString('es-CL')}`;
+    tr.appendChild(tdPrecio);
+    
+    // Celda Stock
+    const tdStock = document.createElement('td');
+    tdStock.textContent = `Stock: ${p.stock}`;
+    tr.appendChild(tdStock);
+    
+    // Celda Acciones
+    const tdAcciones = document.createElement('td');
+    const btnEliminar = document.createElement('button');
+    btnEliminar.className = 'btn btn-sm btn-danger';
+    btnEliminar.textContent = 'Eliminar';
+    btnEliminar.addEventListener('click', () => eliminarProducto(p.id));
+    tdAcciones.appendChild(btnEliminar);
+    tr.appendChild(tdAcciones);
+    
+    tbody.appendChild(tr);
+  });
 }
+
 
 
 function eliminarProducto(id) {
@@ -190,16 +251,47 @@ function eliminarProducto(id) {
 function cargarPedidos() {
   const pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
   const tbody = document.getElementById('pedidos-table');
-  tbody.innerHTML = pedidos.map(p => `
-    <tr>
-      <td>${p.id}</td>
-      <td>${p.cliente}</td>
-      <td>$${p.total}</td>
-      <td>${p.estado}</td>
-      <td><button class="btn btn-sm btn-success">Marcar como enviado</button></td>
-    </tr>
-  `).join('');
+  
+  // Limpiar la tabla primero
+  while (tbody.firstChild) {
+    tbody.removeChild(tbody.firstChild);
+  }
+
+  pedidos.forEach(p => {
+    const tr = document.createElement('tr');
+    
+    // Celda ID
+    const tdId = document.createElement('td');
+    tdId.textContent = p.id;
+    tr.appendChild(tdId);
+    
+    // Celda Cliente
+    const tdCliente = document.createElement('td');
+    tdCliente.textContent = p.cliente;
+    tr.appendChild(tdCliente);
+    
+    // Celda Total
+    const tdTotal = document.createElement('td');
+    tdTotal.textContent = `$${p.total}`;
+    tr.appendChild(tdTotal);
+    
+    // Celda Estado
+    const tdEstado = document.createElement('td');
+    tdEstado.textContent = p.estado;
+    tr.appendChild(tdEstado);
+    
+    // Celda Acciones
+    const tdAcciones = document.createElement('td');
+    const btnEnviado = document.createElement('button');
+    btnEnviado.className = 'btn btn-sm btn-success';
+    btnEnviado.textContent = 'Marcar como enviado';
+    tdAcciones.appendChild(btnEnviado);
+    tr.appendChild(tdAcciones);
+    
+    tbody.appendChild(tr);
+  });
 }
+
 
 // ====================================
 // FUNCIONES GEOGRÁFICAS CHILENAS
