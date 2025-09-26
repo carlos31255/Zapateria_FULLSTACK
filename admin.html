@@ -28,9 +28,6 @@
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="productos-tab" data-bs-toggle="tab" data-bs-target="#productos" type="button" role="tab">Productos</button>
       </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="pedidos-tab" data-bs-toggle="tab" data-bs-target="#pedidos" type="button" role="tab">Pedidos</button>
-      </li>
     </ul>
 
     <!-- Contenido de pestañas -->
@@ -106,6 +103,13 @@
         <button class="btn btn-primary mb-3" onclick="mostrarFormularioProducto()">Añadir Producto</button>
             <div id="form-producto" class="mb-3" style="display:none;">
             <input type="text" id="nombreProducto" class="form-control mb-2" placeholder="Nombre del producto" required>
+            <select id="categoriaProducto" class="form-control mb-2" required>
+              <option value="">Seleccionar categoría</option>
+              <option value="hombre">Hombre</option>
+              <option value="mujer">Mujer</option>
+              <option value="niños">Niños</option>
+              <option value="deportivos">Deportivos</option>
+            </select>
             <input type="number" id="precioProducto" class="form-control mb-2" placeholder="Precio" required>
             <input type="text" id="imagenProducto" class="form-control mb-2" placeholder="URL de la imagen" required>
             <textarea id="descripcionProducto" class="form-control mb-2" placeholder="Descripción del producto"></textarea>
@@ -118,30 +122,13 @@
           <thead>
             <tr>
               <th>Nombre</th>
+              <th>Categoría</th>
               <th>Precio</th>
+              <th>Stock</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody id="productos-table">
-            <!-- Se llenará dinámicamente -->
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Gestión de Pedidos -->
-      <div class="tab-pane fade" id="pedidos" role="tabpanel">
-        <h2 class="h5">Gestión de Pedidos</h2>
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th>ID Pedido</th>
-              <th>Cliente</th>
-              <th>Total</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="pedidos-table">
             <!-- Se llenará dinámicamente -->
           </tbody>
         </table>

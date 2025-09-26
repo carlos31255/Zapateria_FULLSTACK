@@ -59,6 +59,16 @@ function obtenerClaseRol(rol) {
   }
 }
 
+function obtenerClaseCategoria(categoria) {
+  switch(categoria) {
+    case 'hombre': return 'bg-primary';
+    case 'mujer': return 'bg-success';
+    case 'niños': return 'bg-warning text-dark';
+    case 'deportivos': return 'bg-info';
+    default: return 'bg-secondary';
+  }
+}
+
 // Mostrar formulario de creación de usuario
 function mostrarFormularioUsuario() {
   const formulario = document.getElementById('form-usuario');
@@ -188,19 +198,21 @@ function mostrarFormularioProducto() {
 
 function guardarProducto() {
   const nombre = document.getElementById('nombreProducto').value.trim();
+  const categoria = document.getElementById('categoriaProducto').value;
   const precio = parseInt(document.getElementById('precioProducto').value);
   const imagen = document.getElementById('imagenProducto').value.trim();
   const descripcion = document.getElementById('descripcionProducto').value.trim();
   const stock = parseInt(document.getElementById('stockProducto').value);
 
-  if (!nombre || !precio || !imagen || isNaN(stock)) {
-    return alert("Completa todos los campos obligatorios (nombre, precio, imagen, stock)");
+  if (!nombre || !categoria || !precio || !imagen || isNaN(stock)) {
+    return alert("Completa todos los campos obligatorios (nombre, categoría, precio, imagen, stock)");
   }
 
   const productos = JSON.parse(localStorage.getItem('productos')) || [];
   productos.push({
     id: Date.now(),
     nombre,
+    categoria,
     precio,
     imagen,
     descripcion,
@@ -212,6 +224,7 @@ function guardarProducto() {
   // Resetear formulario
   document.getElementById('form-producto').style.display = 'none';
   document.getElementById('nombreProducto').value = "";
+  document.getElementById('categoriaProducto').value = "";
   document.getElementById('precioProducto').value = "";
   document.getElementById('imagenProducto').value = "";
   document.getElementById('descripcionProducto').value = "";
@@ -238,6 +251,14 @@ function cargarProductos() {
     tdNombre.textContent = p.nombre;
     tr.appendChild(tdNombre);
     
+    // Celda Categoría
+    const tdCategoria = document.createElement('td');
+    const spanCategoria = document.createElement('span');
+    spanCategoria.className = `badge ${obtenerClaseCategoria(p.categoria)}`;
+    spanCategoria.textContent = p.categoria || 'Sin categoría';
+    tdCategoria.appendChild(spanCategoria);
+    tr.appendChild(tdCategoria);
+    
     // Celda Precio
     const tdPrecio = document.createElement('td');
     tdPrecio.textContent = `$${p.precio.toLocaleString('es-CL')}`;
@@ -245,7 +266,9 @@ function cargarProductos() {
     
     // Celda Stock
     const tdStock = document.createElement('td');
-    tdStock.textContent = `Stock: ${p.stock}`;
+    tdStock.textContent = p.stock || 0;
+    tdStock.style.color = (p.stock || 0) <= 5 ? '#dc3545' : '#28a745';
+    tdStock.style.fontWeight = 'bold';
     tr.appendChild(tdStock);
     
     // Celda Acciones
@@ -270,62 +293,22 @@ function eliminarProducto(id) {
   cargarProductos();
 }
 
-
-// ====================================
-// PEDIDOS
-// ====================================
-
-// Pedidos (ejemplo básico)
-function cargarPedidos() {
-  const pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
-  const tbody = document.getElementById('pedidos-table');
-  
-  // Limpiar la tabla primero
-  while (tbody.firstChild) {
-    tbody.removeChild(tbody.firstChild);
-  }
-
-  pedidos.forEach(p => {
-    const tr = document.createElement('tr');
-    
-    // Celda ID
-    const tdId = document.createElement('td');
-    tdId.textContent = p.id;
-    tr.appendChild(tdId);
-    
-    // Celda Cliente
-    const tdCliente = document.createElement('td');
-    tdCliente.textContent = p.cliente;
-    tr.appendChild(tdCliente);
-    
-    // Celda Total
-    const tdTotal = document.createElement('td');
-    tdTotal.textContent = `$${p.total}`;
-    tr.appendChild(tdTotal);
-    
-    // Celda Estado
-    const tdEstado = document.createElement('td');
-    tdEstado.textContent = p.estado;
-    tr.appendChild(tdEstado);
-    
-    // Celda Acciones
-    const tdAcciones = document.createElement('td');
-    const btnEnviado = document.createElement('button');
-    btnEnviado.className = 'btn btn-sm btn-success';
-    btnEnviado.textContent = 'Marcar como enviado';
-    tdAcciones.appendChild(btnEnviado);
-    tr.appendChild(tdAcciones);
-    
-    tbody.appendChild(tr);
-  });
-}
-
-
 // ====================================
 // INICIALIZACIÓN
 // ====================================
 document.addEventListener('DOMContentLoaded', () => {
   cargarUsuarios();
   cargarProductos();
-  cargarPedidos();
+  
+  // DEBUG: Función para verificar productos en localStorage
+  window.verificarProductos = function() {
+    const productos = JSON.parse(localStorage.getItem('productos')) || [];
+    console.log('📦 Productos en localStorage:');
+    productos.forEach(p => {
+      console.log(`- ${p.nombre} | Categoría: ${p.categoria} | Precio: $${p.precio} | Stock: ${p.stock}`);
+    });
+    return productos;
+  };
+  
+  console.log('🔧 Panel de administración cargado. Usa verificarProductos() para debug.');
 });

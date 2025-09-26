@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     cargarItemsCarrito();
     configurarEventListeners();
     actualizarContadorCarrito();
+    actualizarEstadoCheckout();
 });
 
 // Cargar items del carrito
@@ -21,6 +22,17 @@ function cargarItemsCarrito() {
     cartItemsContainer.innerHTML = '';
     
     if (cart.length === 0) {
+        // Verificar si acabamos de completar una compra exitosa
+        const compraExitosa = localStorage.getItem('compraExitosa');
+        if (compraExitosa) {
+            // Limpiar el flag y NO mostrar mensaje de carrito vacío
+            localStorage.removeItem('compraExitosa');
+            if (emptyCartMessage) emptyCartMessage.style.display = 'none';
+            if (cartSummary) cartSummary.style.display = 'none';
+            return;
+        }
+        
+        // Carrito realmente vacío (no por compra exitosa)
         if (emptyCartMessage) emptyCartMessage.style.display = 'block';
         if (cartSummary) cartSummary.style.display = 'none';
         return;
@@ -38,6 +50,7 @@ function cargarItemsCarrito() {
     });
     
     actualizarResumenCarrito();
+    actualizarEstadoCheckout();
 }
 
 // Crear elemento del carrito usando template HTML
@@ -143,10 +156,7 @@ function configurarEventListeners() {
     const checkoutBtn = document.getElementById('checkout-btn');
     if (checkoutBtn) {
         checkoutBtn.addEventListener('click', function() {
-            alert('¡Gracias por tu compra! Serás redirigido al proceso de pago.');
-            // Vaciar carrito y redirigir
-            localStorage.removeItem('carrito');
-            window.location.href = 'index.html';
+            procesarCompra();
         });
     }
 }
@@ -157,6 +167,17 @@ function actualizarCantidadItem(id, cantidad) {
     const item = cart.find(item => item.id == id); // Usar == para comparar string con number
     
     if (item) {
+        // Verificar stock disponible
+        const productos = JSON.parse(localStorage.getItem('productos')) || [];
+        const producto = productos.find(p => p.id == id);
+        
+        if (producto && cantidad > producto.stock) {
+            alert(`No hay suficiente stock. Stock disponible: ${producto.stock}`);
+            // Recargar la página para mostrar la cantidad correcta
+            cargarItemsCarrito();
+            return;
+        }
+        
         const cantidadAnterior = item.cantidad;
         item.cantidad = cantidad;
         localStorage.setItem('carrito', JSON.stringify(cart));
@@ -213,6 +234,112 @@ function actualizarResumenCarrito() {
     }
     if (totalElement) {
         totalElement.textContent = `$${total.toLocaleString('es-CL')}`;
+    }
+}
+
+// Procesar compra y actualizar stock
+function procesarCompra() {
+    // Verificar que el usuario esté logueado
+    const usuario = JSON.parse(localStorage.getItem('usuarioActual'));
+    if (!usuario) {
+        alert('Debes iniciar sesión para finalizar la compra');
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    const cart = JSON.parse(localStorage.getItem('carrito')) || [];
+    
+    if (cart.length === 0) {
+        alert('El carrito está vacío');
+        return;
+    }
+    
+    // Obtener productos actuales
+    let productos = JSON.parse(localStorage.getItem('productos')) || [];
+    
+    // Verificar stock disponible antes de procesar
+    for (let cartItem of cart) {
+        const producto = productos.find(p => p.id == cartItem.id);
+        if (producto && producto.stock < cartItem.cantidad) {
+            alert(`No hay suficiente stock para ${cartItem.nombre}. Stock disponible: ${producto.stock}, solicitado: ${cartItem.cantidad}`);
+            return;
+        }
+    }
+    
+    // Actualizar stock de cada producto
+    cart.forEach(cartItem => {
+        const productoIndex = productos.findIndex(p => p.id == cartItem.id);
+        if (productoIndex !== -1) {
+            productos[productoIndex].stock -= cartItem.cantidad;
+            // Asegurar que el stock no sea negativo
+            if (productos[productoIndex].stock < 0) {
+                productos[productoIndex].stock = 0;
+            }
+        }
+    });
+    
+    // Guardar productos actualizados
+    localStorage.setItem('productos', JSON.stringify(productos));
+    
+    // Crear nuevo pedido
+    const nuevoPedido = {
+        id: Date.now(), // ID único basado en timestamp
+        cliente: {
+            nombre: usuario.nombre,
+            email: usuario.email,
+            telefono: usuario.telefono || 'No especificado'
+        },
+        fecha: new Date().toISOString().split('T')[0], // Fecha actual en formato YYYY-MM-DD
+        estado: "pendiente", // Estado inicial del pedido
+        total: cart.reduce((sum, item) => sum + (item.precio * item.cantidad), 0),
+        productos: cart.map(item => ({
+            nombre: item.nombre,
+            cantidad: item.cantidad,
+            precio: item.precio
+        })),
+        direccionEnvio: "Dirección por definir" // Se podría expandir para capturar dirección real
+    };
+    
+    // Obtener pedidos existentes y agregar el nuevo
+    const pedidosExistentes = JSON.parse(localStorage.getItem('pedidos')) || [];
+    pedidosExistentes.push(nuevoPedido);
+    localStorage.setItem('pedidos', JSON.stringify(pedidosExistentes));
+    
+    // Mostrar mensaje de éxito
+    alert('¡Gracias por tu compra! El stock ha sido actualizado y tu pedido ha sido registrado.');
+    
+    // Vaciar carrito DESPUÉS de mostrar el mensaje de éxito y antes de redirigir
+    localStorage.removeItem('carrito');
+    
+    // Agregar flag temporal para evitar mostrar "carrito vacío" inmediatamente después
+    localStorage.setItem('compraExitosa', 'true');
+    
+    // Redirigir después de un pequeño delay para evitar el problema de timing
+    setTimeout(() => {
+        window.location.href = 'index.html';
+    }, 500);
+}
+
+// Actualizar estado del botón de checkout según autenticación
+function actualizarEstadoCheckout() {
+    const checkoutBtn = document.getElementById('checkout-btn');
+    const usuario = JSON.parse(localStorage.getItem('usuarioActual'));
+    
+    if (!checkoutBtn) return;
+    
+    if (!usuario) {
+        // Usuario no logueado - mostrar botón para login
+        checkoutBtn.innerHTML = '<i class="fas fa-user"></i> Iniciar Sesión para Comprar';
+        checkoutBtn.className = 'btn btn-warning w-100';
+        checkoutBtn.onclick = function() {
+            alert('Debes iniciar sesión para finalizar la compra');
+            window.location.href = 'login.html';
+        };
+    } else {
+        // Usuario logueado - botón normal de checkout
+        checkoutBtn.innerHTML = '<i class="fas fa-credit-card"></i> Finalizar Compra';
+        checkoutBtn.className = 'btn btn-success w-100';
+        // No agregar onclick aquí - ya se maneja con addEventListener en cargarItemsCarrito()
     }
 }
 

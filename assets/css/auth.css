@@ -1,5 +1,16 @@
 /* Estilos específicos para las páginas de autenticación */
 
+/* Variables CSS necesarias para auth.css */
+:root {
+    --color-rojo: #e63946; /* Rojo vibrante */
+    --color-blanco: #ffffff;
+    --sombra-gris: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --color-gris-oscuro: #333;
+    --color-gris-claro: #ddd;
+    --transicion: all 0.3s ease;
+    --color-texto-oscuro: #333;
+}
+
 .auth-container {
     display: flex;
     justify-content: center;
@@ -9,9 +20,9 @@
 }
 
 .form-container {
-    background: var(--light);
+    background: var(--color-blanco);
     border-radius: 8px;
-    box-shadow: var(--shadow);
+    box-shadow: var(--sombra-gris);
     padding: 30px;
     width: 100%;
     max-width: 500px;
@@ -31,7 +42,7 @@
 .form-title {
     text-align: center;
     margin-bottom: 30px;
-    color: var(--primary);
+    color: var(--color-gris-oscuro);
     font-size: 1.8rem;
 }
 
@@ -49,13 +60,13 @@
 .form-group select {
     width: 100%;
     padding: 12px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--color-gris-claro);
     border-radius: 4px;
     font-size: 1rem;
 }
 
 .error-message {
-    color: var(--accent);
+    color: var(--color-rojo);
     font-size: 0.9rem;
     margin-top: 5px;
     display: none;
@@ -64,11 +75,11 @@
 .btn {
     cursor: pointer;
     border: none;
-    background: var(--accent);
-    color: var(--light);
+    background: var(--color-rojo);
+    color: var(--color-blanco);
     padding: 12px 20px;
     border-radius: 4px;
-    transition: var(--transition);
+    transition: var(--transicion);
     display: inline-block;
     text-align: center;
     width: 100%;
@@ -87,7 +98,7 @@
 }
 
 .form-footer a {
-    color: var(--accent);
+    color: var(--color-rojo);
     font-weight: 500;
 }
 
@@ -95,7 +106,7 @@
 .form-subtitle {
     text-align: center;
     margin-bottom: 30px;
-    color: var(--text);
+    color: var(--color-texto-oscuro);
     font-size: 1rem;
     line-height: 1.5;
 }
@@ -103,7 +114,7 @@
 .form-group textarea {
     width: 100%;
     padding: 12px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--color-gris-claro);
     border-radius: 4px;
     font-size: 1rem;
     font-family: inherit;
@@ -113,7 +124,7 @@
 
 .form-group textarea:focus {
     outline: none;
-    border-color: var(--primary);
+    border-color: var(--color-gris-oscuro);
     box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
 }
 

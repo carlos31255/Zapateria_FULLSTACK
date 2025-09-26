@@ -262,7 +262,14 @@ function verDetalleProducto(id) {
 function cargarPedidosVendedor() {
     try {
         // Cargar pedidos desde localStorage o datos por defecto
-        pedidosActuales = JSON.parse(localStorage.getItem('pedidos')) || obtenerPedidosPorDefecto();
+        const todosPedidos = JSON.parse(localStorage.getItem('pedidos')) || obtenerPedidosPorDefecto();
+        
+        // Filtrar pedidos relevantes para vendedor: excluir "enviado" y "entregado"
+        const estadosRelevantes = ['pendiente', 'procesando', 'vendido', 'cancelado'];
+        pedidosActuales = todosPedidos.filter(pedido => {
+            return estadosRelevantes.includes(pedido.estado.toLowerCase());
+        });
+        
         mostrarPedidosVendedor();
         configurarPaginacionPedidos();
     } catch (error) {
@@ -620,7 +627,14 @@ function filtrarPedidos() {
     const estado = document.getElementById('filtro-estado').value;
     const fecha = document.getElementById('filtro-fecha').value;
     
+    // Partir con todos los pedidos pero filtrar estados no relevantes
     let pedidosFiltrados = JSON.parse(localStorage.getItem('pedidos')) || obtenerPedidosPorDefecto();
+    
+    // Filtrar pedidos relevantes para vendedor: excluir "enviado" y "entregado"  
+    const estadosRelevantes = ['pendiente', 'procesando', 'vendido', 'cancelado'];
+    pedidosFiltrados = pedidosFiltrados.filter(pedido => {
+        return estadosRelevantes.includes(pedido.estado.toLowerCase());
+    });
     
     if (estado) {
         pedidosFiltrados = pedidosFiltrados.filter(pedido => pedido.estado === estado);
@@ -803,8 +817,7 @@ function obtenerClaseEstado(estado) {
     switch(estado?.toLowerCase()) {
         case 'pendiente': return 'bg-warning text-dark';
         case 'procesando': return 'bg-info';
-        case 'enviado': return 'bg-primary';
-        case 'entregado': return 'bg-success';
+        case 'vendido': return 'bg-success';
         case 'cancelado': return 'bg-danger';
         default: return 'bg-secondary';
     }
@@ -882,7 +895,7 @@ function obtenerPedidosPorDefecto() {
                 telefono: "+56 9 8765 4321"
             },
             fecha: "2025-01-15",
-            estado: "entregado",
+            estado: "vendido",
             total: 169980,
             productos: [
                 { nombre: "Zapatos Oxford Clásicos", cantidad: 1, precio: 89990 },
@@ -898,7 +911,7 @@ function obtenerPedidosPorDefecto() {
                 telefono: "+56 9 1234 5678"
             },
             fecha: "2025-01-20",
-            estado: "enviado",
+            estado: "vendido",
             total: 129990,
             productos: [
                 { nombre: "Botines de Cuero", cantidad: 1, precio: 129990 }

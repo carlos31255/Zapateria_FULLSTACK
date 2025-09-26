@@ -6,6 +6,32 @@ document.addEventListener('DOMContentLoaded', function() {
     // Actualizar contador del carrito
     actualizarContadorCarrito();
     
+    // Event listener para atajos de teclado de testing
+    document.addEventListener('keydown', function(e) {
+        // Ctrl + Shift + R = Reset completo
+        if (e.ctrlKey && e.shiftKey && e.key === 'R') {
+            e.preventDefault();
+            if (confirm('🔄 ¿Resetear todo el sistema?\n\n- Se borrará la sesión actual\n- Se limpiará el carrito\n- Se resetearán los productos\n- Se eliminarán los usuarios registrados')) {
+                resetearSistema();
+            }
+        }
+        
+        // Ctrl + Shift + D = Debug/Estado del sistema  
+        if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+            e.preventDefault();
+            mostrarEstadoSistema();
+        }
+        
+        // Ctrl + Shift + L = Login rápido
+        if (e.ctrlKey && e.shiftKey && e.key === 'L') {
+            e.preventDefault();
+            const email = prompt('Email para login rápido (por defecto: test@test.com):', 'test@test.com');
+            if (email) {
+                loginPrueba(email);
+            }
+        }
+    });
+    
     // Menú móvil
     const botonMenuMovil = document.querySelector('.mobile-menu-btn');
     const menuNav = document.querySelector('.navbar ul');
@@ -285,4 +311,145 @@ function inicializarDatosPorDefecto() {
 
     }
 }
+
+// ===============================
+// FUNCIONES DE TESTING Y DEBUG
+// ===============================
+
+// Función para resetear completamente el sistema a estado por defecto
+function resetearSistema() {
+    console.log('🔄 Reseteando sistema completo...');
+    
+    // Limpiar solo datos de usuario y carrito, MANTENER productos
+    const clavesALimpiar = [
+        'usuarioActual',
+        'carrito', 
+        'usuarios'
+    ];
+    
+    clavesALimpiar.forEach(clave => {
+        localStorage.removeItem(clave);
+        console.log(`✅ Limpiado: ${clave}`);
+    });
+    
+    // Reinicializar productos si no existen (NO los borramos para preservar el stock)
+    if (!localStorage.getItem('productos')) {
+        console.log('🔄 Reinicializando productos por defecto...');
+        // Será inicializado por productos.js al cargar
+    }
+    
+    // Mostrar estado actual
+    console.log('📊 Estado después del reset:');
+    console.log('- Usuario logueado:', JSON.parse(localStorage.getItem('usuarioActual')));
+    console.log('- Productos en carrito:', JSON.parse(localStorage.getItem('carrito'))?.length || 0);
+    console.log('- Usuarios registrados:', JSON.parse(localStorage.getItem('usuarios'))?.length || 0);
+    console.log('- Productos en localStorage:', !!localStorage.getItem('productos'));
+    
+    // Recargar página para aplicar cambios
+    console.log('🔄 Recargando página...');
+    setTimeout(() => {
+        window.location.reload();
+    }, 1000);
+}
+
+// Función para mostrar estado actual del sistema
+function mostrarEstadoSistema() {
+    console.log('📊 ESTADO ACTUAL DEL SISTEMA');
+    console.log('================================');
+    
+    const usuario = JSON.parse(localStorage.getItem('usuarioActual'));
+    const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    const productos = JSON.parse(localStorage.getItem('productos')) || [];
+    const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+    
+    console.log('👤 Usuario actual:', usuario ? usuario.nombre : 'No logueado');
+    console.log('🛒 Items en carrito:', carrito.length);
+    console.log('📦 Total productos:', productos.length);
+    console.log('👥 Usuarios registrados:', usuarios.length);
+    
+    if (productos.length > 0) {
+        console.log('\n📊 Stock de productos:');
+        productos.forEach(p => {
+            const stockColor = p.stock === 0 ? '🔴' : p.stock <= 5 ? '🟡' : '🟢';
+            console.log(`  ${stockColor} ${p.nombre}: ${p.stock} unidades`);
+        });
+    }
+    
+    if (carrito.length > 0) {
+        console.log('\n🛒 Contenido del carrito:');
+        carrito.forEach(item => {
+            console.log(`  - ${item.nombre}: ${item.cantidad} unidades`);
+        });
+    }
+    
+    return {
+        usuario,
+        carrito,
+        productos,
+        usuarios
+    };
+}
+
+// Función para crear usuarios de prueba
+function crearUsuariosPrueba() {
+    const usuariosPrueba = [
+        {
+            nombre: 'Test User',
+            email: 'test@test.com',
+            rut: '12345678-9',
+            password: '123456',
+            rol: 'cliente'
+        },
+        {
+            nombre: 'Admin Test',
+            email: 'admin@test.com', 
+            rut: '98765432-1',
+            password: 'admin',
+            rol: 'admin'
+        }
+    ];
+    
+    localStorage.setItem('usuarios', JSON.stringify(usuariosPrueba));
+    console.log('👥 Usuarios de prueba creados:');
+    usuariosPrueba.forEach(u => console.log(`  - ${u.nombre} (${u.email}) - ${u.rol}`));
+}
+
+// Función para login rápido de prueba
+function loginPrueba(email = 'test@test.com') {
+    const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+    const usuario = usuarios.find(u => u.email === email);
+    
+    if (usuario) {
+        localStorage.setItem('usuarioActual', JSON.stringify(usuario));
+        console.log(`✅ Login automático como: ${usuario.nombre} (${usuario.rol})`);
+        setTimeout(() => window.location.reload(), 500);
+    } else {
+        console.log('❌ Usuario no encontrado. Creando usuarios de prueba...');
+        crearUsuariosPrueba();
+        loginPrueba(email);
+    }
+}
+
+// Exponer funciones globalmente para uso en consola
+window.resetearSistema = resetearSistema;
+window.mostrarEstadoSistema = mostrarEstadoSistema; 
+window.crearUsuariosPrueba = crearUsuariosPrueba;
+window.loginPrueba = loginPrueba;
+window.debugStock = () => mostrarStockActual?.() || console.log('Función mostrarStockActual no disponible en esta página');
+
+// Mensaje de bienvenida para desarrolladores
+console.log('🔧 FUNCIONES DE TESTING DISPONIBLES:');
+console.log('====================================');
+console.log('FUNCIONES EN CONSOLA:');
+console.log('resetearSistema() - Limpia todo y recarga');
+console.log('mostrarEstadoSistema() - Muestra estado actual');  
+console.log('crearUsuariosPrueba() - Crea usuarios de testing');
+console.log('loginPrueba("email") - Login automático');
+console.log('debugStock() - Muestra stock de productos');
+console.log('');
+console.log('ATAJOS DE TECLADO:');
+console.log('Ctrl+Shift+R - Reset completo del sistema');
+console.log('Ctrl+Shift+D - Ver estado/debug del sistema'); 
+console.log('Ctrl+Shift+L - Login rápido');
+console.log('====================================');
 

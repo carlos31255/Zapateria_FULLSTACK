@@ -32,7 +32,7 @@ const productsData = [
         imagen: "./assets/img/productos/taconeselegantes.jpg",
         categoria: "mujer",
         descripcion: "Tacones altos elegantes para ocasiones especiales",
-        stock: 8
+        stock: 5
     },
     {
         id: 3,
@@ -68,7 +68,7 @@ const productsData = [
         imagen: "./assets/img/productos/zapatosescolares.jpg",
         categoria: "niños",
         descripcion: "Zapatos escolares resistentes y cómodos",
-        stock: 15
+        stock: 0
     },
     {
         id: 7,
@@ -92,14 +92,62 @@ const productsData = [
 
 // Inicializar productos
 function inicializarProductos() {
-    // Forzar actualización de productos para esta sesión
-    // Esto asegura que se carguen los datos más recientes
-    localStorage.setItem('productos', JSON.stringify(productsData));
-    
     // Cargar productos desde localStorage
-    let products = JSON.parse(localStorage.getItem('productos')) || productsData;
+    let products = JSON.parse(localStorage.getItem('productos'));
+    
+    // FORZAR ACTUALIZACIÓN: Si los productos no tienen las categorías correctas, reemplazarlos
+    const categoriasCorrectas = ['hombre', 'mujer', 'niños', 'deportivos'];
+    let needsReset = false;
+    
+    if (products) {
+        // Verificar si algún producto tiene categorías incorrectas
+        const categoriasEncontradas = [...new Set(products.map(p => p.categoria))];
+        const tieneCategoriasIncorrectas = categoriasEncontradas.some(cat => 
+            !['hombre', 'mujer', 'niños', 'deportivos'].includes(cat)
+        );
+        
+        if (tieneCategoriasIncorrectas) {
+            console.log('🔄 Categorías incorrectas detectadas, actualizando productos...');
+            console.log('Categorías encontradas:', categoriasEncontradas);
+            needsReset = true;
+        }
+    }
+    
+    // Solo inicializar con datos por defecto si no hay nada en localStorage O necesita reset
+    if (!products || needsReset) {
+        console.log('📦 Inicializando productos con datos por defecto...');
+        localStorage.setItem('productos', JSON.stringify(productsData));
+        products = productsData;
+    } else {
+        // Ya existen productos correctos en localStorage, verificar que tengan todas las propiedades necesarias
+        let needsUpdate = false;
+        products.forEach((product, index) => {
+            if (product.stock === undefined) {
+                const defaultProduct = productsData.find(p => p.id === product.id);
+                if (defaultProduct) {
+                    product.stock = defaultProduct.stock;
+                    needsUpdate = true;
+                }
+            }
+        });
+        
+        // Si se necesita actualizar, guardar los cambios
+        if (needsUpdate) {
+            localStorage.setItem('productos', JSON.stringify(products));
+        }
+    }
     
     mostrarProductos(products);
+}
+
+// Función de depuración - muestra el stock actual en consola
+function mostrarStockActual() {
+    const productos = JSON.parse(localStorage.getItem('productos')) || [];
+    console.log('Stock actual de todos los productos:');
+    productos.forEach(p => {
+        console.log(`${p.nombre}: ${p.stock} unidades`);
+    });
+    return productos;
 }
 
 // Mostrar productos en el DOM
@@ -127,6 +175,11 @@ function mostrarProductos(products) {
 
 // Crear tarjeta de producto
 function crearTarjetaProducto(product) {
+    // Obtener stock actualizado desde localStorage
+    const productos = JSON.parse(localStorage.getItem('productos')) || productsData;
+    const productoActualizado = productos.find(p => p.id === product.id);
+    const stockActual = productoActualizado ? productoActualizado.stock : product.stock;
+    
     const card = document.createElement('div');
     card.className = 'product-card';
     
@@ -198,23 +251,53 @@ function crearTarjetaProducto(product) {
     price.className = 'product-price';
     price.textContent = `$${product.precio.toLocaleString('es-CL')}`;
     
+    // Información de stock
+    const stock = document.createElement('p');
+    stock.className = 'product-stock';
+    if (stockActual > 0) {
+        stock.textContent = `Stock disponible: ${stockActual}`;
+        stock.style.color = stockActual <= 5 ? '#e63946' : '#28a745'; // Rojo si queda poco, verde si hay suficiente
+    } else {
+        stock.textContent = 'Sin stock';
+        stock.style.color = '#dc3545';
+        stock.style.fontWeight = 'bold';
+    }
+    
     // Botón agregar al carrito
     const addButton = document.createElement('button');
     addButton.className = 'btn add-to-cart-btn';
-    addButton.innerHTML = '<i class="fas fa-shopping-cart"></i> Agregar al Carrito';
-    addButton.addEventListener('click', () => agregarAlCarritoProducto(product));
     
-    // Si no hay stock, deshabilitar botón
-    if (product.stock === 0) {
+    // Verificar si el usuario está logueado
+    const usuario = JSON.parse(localStorage.getItem('usuarioActual'));
+    
+    if (stockActual <= 0) {
+        // Sin stock
+        addButton.innerHTML = '<i class="fas fa-times"></i> Sin Stock';
         addButton.disabled = true;
-        addButton.textContent = 'Sin Stock';
         addButton.classList.add('disabled');
+        addButton.style.backgroundColor = '#6c757d';
+        addButton.style.cursor = 'not-allowed';
+        addButton.style.opacity = '0.6';
+    } else if (!usuario) {
+        // Con stock pero usuario no logueado
+        addButton.innerHTML = '<i class="fas fa-user"></i> Iniciar Sesión para Comprar';
+        addButton.addEventListener('click', () => {
+            alert('Debes iniciar sesión para agregar productos al carrito');
+            window.location.href = 'login.html';
+        });
+        addButton.style.backgroundColor = '#ffc107';
+        addButton.style.color = '#000';
+    } else {
+        // Con stock y usuario logueado
+        addButton.innerHTML = '<i class="fas fa-shopping-cart"></i> Agregar al Carrito';
+        addButton.addEventListener('click', () => agregarAlCarritoProducto(product));
     }
     
     // Ensamblar la tarjeta
     productInfo.appendChild(title);
     productInfo.appendChild(description);
     productInfo.appendChild(price);
+    productInfo.appendChild(stock);
     productInfo.appendChild(addButton);
     
     card.appendChild(imgElement);
@@ -225,8 +308,20 @@ function crearTarjetaProducto(product) {
 
 // Agregar producto al carrito
 function agregarAlCarritoProducto(product) {
+    // Verificar que el usuario esté logueado
+    const usuario = JSON.parse(localStorage.getItem('usuarioActual'));
+    if (!usuario) {
+        alert('Debes iniciar sesión para agregar productos al carrito');
+        window.location.href = 'login.html';
+        return;
+    }
     
-    if (product.stock <= 0) {
+    // Obtener stock actualizado desde localStorage
+    const productos = JSON.parse(localStorage.getItem('productos')) || productsData;
+    const productoActualizado = productos.find(p => p.id === product.id);
+    const stockActual = productoActualizado ? productoActualizado.stock : product.stock;
+    
+    if (stockActual <= 0) {
         alert('Este producto no tiene stock disponible');
         return;
     }
@@ -237,7 +332,13 @@ function agregarAlCarritoProducto(product) {
     const existingItemIndex = cart.findIndex(item => item.id === product.id);
     
     if (existingItemIndex !== -1) {
-        // Si ya existe, aumentar cantidad
+        // Si ya existe, verificar que no exceda el stock disponible
+        const cantidadActual = cart[existingItemIndex].cantidad;
+        if (cantidadActual >= stockActual) {
+            alert(`No puedes agregar más de este producto. Stock disponible: ${stockActual}`);
+            return;
+        }
+        // Aumentar cantidad
         cart[existingItemIndex].cantidad += 1;
     } else {
         // Si no existe, agregar nuevo item
@@ -246,7 +347,8 @@ function agregarAlCarritoProducto(product) {
             nombre: product.nombre,
             precio: product.precio,
             imagen: product.imagen,
-            cantidad: 1
+            cantidad: 1,
+            stock: stockActual // Usar stock actualizado
         });
     }
     
@@ -351,8 +453,6 @@ function aplicarFiltros() {
     
     mostrarProductos(filteredProducts);
 }
-
-// Nota: actualizarContadorCarrito está definida en main.js
 
 // Inicializar productos destacados en el index
 function inicializarProductosDestacados() {
