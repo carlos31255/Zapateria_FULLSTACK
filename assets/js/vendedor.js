@@ -9,10 +9,39 @@ const elementosPorPagina = 10;
 
 document.addEventListener('DOMContentLoaded', function() {
     verificarSesionVendedor();
-    cargarProductosVendedor();
-    cargarPedidosVendedor();
+    inicializarPanelVendedor();
     configurarBuscadores();
 });
+
+// Función para inicializar correctamente el panel de vendedor
+function inicializarPanelVendedor() {
+    // Asegurar que los productos estén correctamente inicializados
+    let productos = JSON.parse(localStorage.getItem('productos'));
+    
+    if (!productos || productos.length === 0) {
+        console.log('Inicializando productos por defecto para vendedor...');
+        productos = obtenerProductosPorDefecto();
+        localStorage.setItem('productos', JSON.stringify(productos));
+    } else {
+        // Verificar que todos los productos tengan el campo 'activo' definido
+        let productosActualizados = false;
+        productos = productos.map(producto => {
+            if (producto.activo === undefined) {
+                productosActualizados = true;
+                return { ...producto, activo: true };
+            }
+            return producto;
+        });
+        
+        if (productosActualizados) {
+            console.log('Actualizando productos sin campo activo...');
+            localStorage.setItem('productos', JSON.stringify(productos));
+        }
+    }
+    
+    cargarProductosVendedor();
+    cargarPedidosVendedor();
+}
 
 // Verificar que el usuario es vendedor
 function verificarSesionVendedor() {
@@ -31,8 +60,25 @@ function verificarSesionVendedor() {
 
 function cargarProductosVendedor() {
     try {
-        // Cargar productos desde localStorage o datos por defecto
-        productosActuales = JSON.parse(localStorage.getItem('productos')) || obtenerProductosPorDefecto();
+        // Cargar productos desde localStorage o inicializar si no existen
+        let productos = JSON.parse(localStorage.getItem('productos'));
+        
+        if (!productos || productos.length === 0) {
+            // Si no hay productos, inicializar con datos por defecto
+            productos = obtenerProductosPorDefecto();
+            localStorage.setItem('productos', JSON.stringify(productos));
+        }
+        
+        // Asegurar que todos los productos tengan el campo 'activo' definido
+        productos = productos.map(producto => ({
+            ...producto,
+            activo: producto.activo !== undefined ? producto.activo : true
+        }));
+        
+        // Guardar productos actualizados en localStorage
+        localStorage.setItem('productos', JSON.stringify(productos));
+        
+        productosActuales = productos;
         mostrarProductosVendedor();
         configurarPaginacionProductos();
     } catch (error) {
@@ -851,36 +897,91 @@ function obtenerProductosPorDefecto() {
     return [
         {
             id: 1,
-            nombre: "Zapatos Oxford Clásicos",
+            nombre: "Nike Air Max 270",
             precio: 89990,
-            stock: 15,
-            categoria: "Formal",
-            descripcion: "Zapatos Oxford de cuero genuino, perfectos para ocasiones formales",
-            imagen: "https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
+            imagen: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            categoria: "deportivos",
+            descripcion: "Zapatillas deportivas con tecnología Air Max para máxima comodidad y estilo.",
+            stock: 25,
             activo: true,
-            fechaCreacion: "2025-01-01"
+            fechaCreacion: new Date().toISOString()
         },
         {
             id: 2,
-            nombre: "Sneakers Deportivos",
-            precio: 79990,
-            stock: 25,
-            categoria: "Deportivo",
-            descripcion: "Zapatillas deportivas de alta tecnología para máximo rendimiento",
-            imagen: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
+            nombre: "Converse Chuck Taylor All Star",
+            precio: 45990,
+            imagen: "https://images.unsplash.com/photo-1552346154-21d32810aba3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            categoria: "casual",
+            descripcion: "Clásicas zapatillas de lona, perfectas para un look casual y juvenil.",
+            stock: 30,
             activo: true,
-            fechaCreacion: "2025-01-02"
+            fechaCreacion: new Date().toISOString()
         },
         {
             id: 3,
-            nombre: "Botines de Cuero",
-            precio: 129990,
-            stock: 8,
-            categoria: "Botas",
-            descripcion: "Botines de cuero premium, ideales para el clima chileno",
-            imagen: "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
+            nombre: "Adidas Stan Smith",
+            precio: 79990,
+            imagen: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            categoria: "casual",
+            descripcion: "Icónicas zapatillas blancas con detalles verdes, un clásico atemporal.",
+            stock: 20,
             activo: true,
-            fechaCreacion: "2025-01-03"
+            fechaCreacion: new Date().toISOString()
+        },
+        {
+            id: 4,
+            nombre: "Zapatos Oxford Clásicos",
+            precio: 129990,
+            imagen: "https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            categoria: "formal",
+            descripcion: "Elegantes zapatos Oxford de cuero genuino para ocasiones formales.",
+            stock: 15,
+            activo: true,
+            fechaCreacion: new Date().toISOString()
+        },
+        {
+            id: 5,
+            nombre: "Tacones Elegantes",
+            precio: 99990,
+            imagen: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            categoria: "mujer",
+            descripcion: "Tacones altos elegantes para eventos especiales y ocasiones formales.",
+            stock: 12,
+            activo: true,
+            fechaCreacion: new Date().toISOString()
+        },
+        {
+            id: 6,
+            nombre: "Botas de Montaña",
+            precio: 149990,
+            imagen: "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            categoria: "outdoor",
+            descripcion: "Resistentes botas de montaña ideales para trekking y actividades al aire libre.",
+            stock: 18,
+            activo: true,
+            fechaCreacion: new Date().toISOString()
+        },
+        {
+            id: 7,
+            nombre: "Sandalias de Verano",
+            precio: 39990,
+            imagen: "https://images.unsplash.com/photo-1505782679771-15200ba4a5db?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            categoria: "verano",
+            descripcion: "Cómodas sandalias perfectas para los días calurosos de verano.",
+            stock: 35,
+            activo: true,
+            fechaCreacion: new Date().toISOString()
+        },
+        {
+            id: 8,
+            nombre: "Zapatillas Running",
+            precio: 119990,
+            imagen: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            categoria: "deportivos",
+            descripcion: "Zapatillas especializadas para running con tecnología de amortiguación avanzada.",
+            stock: 22,
+            activo: true,
+            fechaCreacion: new Date().toISOString()
         }
     ];
 }
