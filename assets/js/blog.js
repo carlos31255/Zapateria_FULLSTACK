@@ -1,11 +1,11 @@
-// Blog StepStyle - Funcionalidades
+// Funcionalidades
 document.addEventListener('DOMContentLoaded', function() {
     cargarArticulosBlog();
     configurarFiltrosBlog();
     configurarPaginacionBlog();
 });
 
-// Base de datos de artículos del blog (versión minimalista)
+// Base de datos de artículos del blog 
 const articulosBlog = [
     {
         id: 1,
@@ -189,7 +189,7 @@ function configurarPaginacionBlog() {
     });
 }
 
-// Abrir artículo completo (modal o página dedicada)
+// Abrir artículo completo 
 function abrirArticulo(id) {
     const articulo = articulosBlog.find(art => art.id === id);
     
@@ -205,8 +205,7 @@ function abrirArticulo(id) {
     }
 }
 
-// Crear modal para artículo
-// Crear modal para mostrar artículo completo (versión minimalista)
+// Crear modal para mostrar artículo completo
 function crearModalArticulo(articulo) {
     const modal = document.createElement('div');
     modal.className = 'blog-modal';

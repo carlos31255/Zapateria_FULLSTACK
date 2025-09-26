@@ -312,9 +312,7 @@ function inicializarDatosPorDefecto() {
     }
 }
 
-// ===============================
 // FUNCIONES DE TESTING Y DEBUG
-// ===============================
 
 // Función para resetear completamente el sistema a estado por defecto
 function resetearSistema() {
@@ -390,66 +388,20 @@ function mostrarEstadoSistema() {
     };
 }
 
-// Función para crear usuarios de prueba
-function crearUsuariosPrueba() {
-    const usuariosPrueba = [
-        {
-            nombre: 'Test User',
-            email: 'test@test.com',
-            rut: '12345678-9',
-            password: '123456',
-            rol: 'cliente'
-        },
-        {
-            nombre: 'Admin Test',
-            email: 'admin@test.com', 
-            rut: '98765432-1',
-            password: 'admin',
-            rol: 'admin'
-        }
-    ];
-    
-    localStorage.setItem('usuarios', JSON.stringify(usuariosPrueba));
-    console.log('👥 Usuarios de prueba creados:');
-    usuariosPrueba.forEach(u => console.log(`  - ${u.nombre} (${u.email}) - ${u.rol}`));
-}
-
-// Función para login rápido de prueba
-function loginPrueba(email = 'test@test.com') {
-    const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-    const usuario = usuarios.find(u => u.email === email);
-    
-    if (usuario) {
-        localStorage.setItem('usuarioActual', JSON.stringify(usuario));
-        console.log(`✅ Login automático como: ${usuario.nombre} (${usuario.rol})`);
-        setTimeout(() => window.location.reload(), 500);
-    } else {
-        console.log('❌ Usuario no encontrado. Creando usuarios de prueba...');
-        crearUsuariosPrueba();
-        loginPrueba(email);
-    }
-}
 
 // Exponer funciones globalmente para uso en consola
 window.resetearSistema = resetearSistema;
 window.mostrarEstadoSistema = mostrarEstadoSistema; 
-window.crearUsuariosPrueba = crearUsuariosPrueba;
-window.loginPrueba = loginPrueba;
-window.debugStock = () => mostrarStockActual?.() || console.log('Función mostrarStockActual no disponible en esta página');
 
 // Mensaje de bienvenida para desarrolladores
-console.log('🔧 FUNCIONES DE TESTING DISPONIBLES:');
+console.log('FUNCIONES DE TESTING DISPONIBLES:');
 console.log('====================================');
 console.log('FUNCIONES EN CONSOLA:');
 console.log('resetearSistema() - Limpia todo y recarga');
 console.log('mostrarEstadoSistema() - Muestra estado actual');  
-console.log('crearUsuariosPrueba() - Crea usuarios de testing');
-console.log('loginPrueba("email") - Login automático');
-console.log('debugStock() - Muestra stock de productos');
 console.log('');
 console.log('ATAJOS DE TECLADO:');
 console.log('Ctrl+Shift+R - Reset completo del sistema');
 console.log('Ctrl+Shift+D - Ver estado/debug del sistema'); 
-console.log('Ctrl+Shift+L - Login rápido');
 console.log('====================================');
 
