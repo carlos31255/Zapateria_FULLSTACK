@@ -75,23 +75,56 @@ function mostrarFormularioUsuario() {
   if (formulario) {
     formulario.style.display = 'block';
     
-    // Cargar regiones básicas en el select
+    // Cargar regiones desde el archivo regiones-comunas.js
     const selectRegion = document.getElementById('regionUsuario');
-    if (selectRegion) {
-      selectRegion.innerHTML = `
-        <option value="">Seleccionar región</option>
-        <option value="Región Metropolitana de Santiago">Región Metropolitana de Santiago</option>
-        <option value="Región de Valparaíso">Región de Valparaíso</option>
-        <option value="Región del Biobío">Región del Biobío</option>
-        <option value="Región de La Araucanía">Región de La Araucanía</option>
-        <option value="Región de Los Lagos">Región de Los Lagos</option>
-      `;
+    if (selectRegion && typeof regionesComunas !== 'undefined') {
+      // Usar la función del archivo regiones-comunas.js para poblar regiones
+      poblarSelectRegiones(selectRegion);
       
       // Agregar event listener para cambio de región
       selectRegion.onchange = function() {
         const selectComuna = document.getElementById('comunaUsuario');
         if (selectComuna) {
-          if (this.value === 'Región Metropolitana de Santiago') {
+          if (this.value) {
+            // Usar la función del archivo regiones-comunas.js para poblar comunas
+            poblarSelectComunas(selectComuna, this.value);
+            selectComuna.disabled = false;
+          } else {
+            selectComuna.innerHTML = '<option value="">Primero selecciona una región</option>';
+            selectComuna.disabled = true;
+          }
+        }
+      };
+      
+      console.log('✅ Regiones y comunas cargadas desde regiones-comunas.js');
+    } else {
+      // Fallback en caso de que no esté disponible el archivo regiones-comunas.js
+      console.warn('⚠️ Archivo regiones-comunas.js no encontrado, usando regiones básicas');
+      selectRegion.innerHTML = `
+        <option value="">Seleccionar región</option>
+        <option value="Arica y Parinacota">Arica y Parinacota</option>
+        <option value="Tarapacá">Tarapacá</option>
+        <option value="Antofagasta">Antofagasta</option>
+        <option value="Atacama">Atacama</option>
+        <option value="Coquimbo">Coquimbo</option>
+        <option value="Valparaíso">Valparaíso</option>
+        <option value="Metropolitana de Santiago">Metropolitana de Santiago</option>
+        <option value="Libertador General Bernardo O'Higgins">Libertador General Bernardo O'Higgins</option>
+        <option value="Maule">Maule</option>
+        <option value="Ñuble">Ñuble</option>
+        <option value="Biobío">Biobío</option>
+        <option value="La Araucanía">La Araucanía</option>
+        <option value="Los Ríos">Los Ríos</option>
+        <option value="Los Lagos">Los Lagos</option>
+        <option value="Aysén del General Carlos Ibáñez del Campo">Aysén del General Carlos Ibáñez del Campo</option>
+        <option value="Magallanes y de la Antártica Chilena">Magallanes y de la Antártica Chilena</option>
+      `;
+      
+      // Event listener básico para el fallback
+      selectRegion.onchange = function() {
+        const selectComuna = document.getElementById('comunaUsuario');
+        if (selectComuna) {
+          if (this.value === 'Metropolitana de Santiago') {
             selectComuna.innerHTML = `
               <option value="">Seleccionar comuna</option>
               <option value="Santiago">Santiago</option>
@@ -99,6 +132,9 @@ function mostrarFormularioUsuario() {
               <option value="Providencia">Providencia</option>
               <option value="Maipú">Maipú</option>
               <option value="Puente Alto">Puente Alto</option>
+              <option value="Vitacura">Vitacura</option>
+              <option value="Ñuñoa">Ñuñoa</option>
+              <option value="La Florida">La Florida</option>
             `;
             selectComuna.disabled = false;
           } else {
