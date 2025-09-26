@@ -26,6 +26,9 @@
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="productos-tab" data-bs-toggle="tab" data-bs-target="#productos" type="button" role="tab">Productos</button>
       </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="vista-previa-tab" data-bs-toggle="tab" data-bs-target="#vista-previa" type="button" role="tab">Vista Previa</button>
+      </li>
     </ul>
 
     <!-- Contenido de pestañas -->
@@ -134,6 +137,48 @@
           </tbody>
         </table>
       </div>
+      </div>
+
+      <!-- Vista Previa del Sitio -->
+      <div class="tab-pane fade" id="vista-previa" role="tabpanel">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h5 mb-0">Vista Previa del Sitio Web</h2>
+          <div>
+            <button class="btn btn-outline-primary btn-sm me-2" onclick="cambiarPaginaPrevia('index.html')">Inicio</button>
+            <button class="btn btn-outline-primary btn-sm me-2" onclick="cambiarPaginaPrevia('productos.html')">Productos</button>
+            <button class="btn btn-outline-primary btn-sm me-2" onclick="cambiarPaginaPrevia('blog.html')">Blog</button>
+            <button class="btn btn-outline-primary btn-sm me-2" onclick="cambiarPaginaPrevia('contacto.html')">Contacto</button>
+            <button class="btn btn-secondary btn-sm" onclick="cerrarVistaPrevia()">Volver al Panel</button>
+          </div>
+        </div>
+        
+        <!-- Contenedor del iframe para la vista previa -->
+        <div class="preview-container" style="border: 2px solid #dee2e6; border-radius: 8px; overflow: hidden; height: 70vh;">
+          <iframe id="preview-iframe" 
+                  src="index.html" 
+                  style="width: 100%; height: 100%; border: none;"
+                  title="Vista previa del sitio web">
+          </iframe>
+        </div>
+        
+        <!-- Información adicional -->
+        <div class="mt-3">
+          <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Vista Previa:</strong> Aquí puede navegar por las diferentes páginas del sitio web tal como las ven los usuarios. 
+            Use los botones superiores para cambiar entre páginas o haga clic en "Volver al Panel" para regresar a la administración.
+          </div>
+          <div class="alert alert-warning" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Nota:</strong> En esta vista previa se han desactivado/ocultado los siguientes elementos para mantener segura su sesión:
+            <ul class="mb-0 mt-2">
+              <li>Botones de "Cerrar Sesión"</li>
+              <li>Enlaces a "Panel Vendedor"</li>
+              <li>Enlaces a "Panel Administrador"</li>
+              <li>Cualquier función administrativa</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   </main>

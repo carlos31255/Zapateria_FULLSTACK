@@ -294,11 +294,346 @@ function eliminarProducto(id) {
 }
 
 // ====================================
+// VISTA PREVIA DEL SITIO WEB
+// ====================================
+
+// Desactivar botón de cerrar sesión en el iframe
+function desactivarCerrarSesionEnIframe() {
+  const iframe = document.getElementById('preview-iframe');
+  
+  if (iframe) {
+    try {
+      // Intentar acceder al contenido del iframe
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+      
+      if (iframeDoc) {
+        // Buscar todos los botones que contengan "Cerrar Sesión" o tengan onclick="logout()"
+        const botonesLogout = iframeDoc.querySelectorAll('button[onclick*="logout"], a[onclick*="logout"], [href*="logout"]');
+        
+        botonesLogout.forEach(boton => {
+          boton.disabled = true;
+          boton.style.opacity = '0.5';
+          boton.style.cursor = 'not-allowed';
+          boton.title = 'Función deshabilitada en vista previa';
+          
+          // Remover eventos de click
+          boton.onclick = function(e) {
+            e.preventDefault();
+            alert('La función de cerrar sesión está deshabilitada en la vista previa.');
+            return false;
+          };
+        });
+        
+        // También buscar por texto del botón
+        const todosBotones = iframeDoc.querySelectorAll('button, a');
+        todosBotones.forEach(boton => {
+          if (boton.textContent && boton.textContent.toLowerCase().includes('cerrar sesión')) {
+            boton.disabled = true;
+            boton.style.opacity = '0.5';
+            boton.style.cursor = 'not-allowed';
+            boton.title = 'Función deshabilitada en vista previa';
+            
+            boton.onclick = function(e) {
+              e.preventDefault();
+              alert('La función de cerrar sesión está deshabilitada en la vista previa.');
+              return false;
+            };
+          }
+        });
+        
+        // Ocultar elementos de panel de administración y vendedor
+        ocultarElementosAdministracionEnIframe(iframeDoc);
+        
+        console.log('🔒 Botones de cerrar sesión desactivados en la vista previa');
+      }
+    } catch (error) {
+      // Si hay error de CORS o acceso, inyectar script
+      console.log('⚠️ No se puede acceder directamente al iframe, intentando inyección de script');
+      inyectarScriptDesactivacion();
+    }
+  }
+}
+
+// Ocultar elementos de administración en el iframe
+function ocultarElementosAdministracionEnIframe(iframeDoc) {
+  if (!iframeDoc) return;
+  
+  try {
+    // Buscar y ocultar "Panel Vendedor"
+    const elementosVendedor = iframeDoc.querySelectorAll('a, button, li, span');
+    elementosVendedor.forEach(elemento => {
+      if (elemento.textContent && 
+          (elemento.textContent.toLowerCase().includes('panel vendedor') ||
+           elemento.textContent.toLowerCase().includes('panel de vendedor') ||
+           (elemento.textContent.toLowerCase().includes('vendedor') && elemento.textContent.toLowerCase().includes('panel')))) {
+        elemento.style.display = 'none';
+        // Si es un elemento li, también ocultar el elemento padre si es necesario
+        if (elemento.tagName === 'LI') {
+          elemento.style.display = 'none';
+        }
+      }
+    });
+    
+    // Buscar y ocultar "Panel Admin" o "Administrador"
+    const elementosAdmin = iframeDoc.querySelectorAll('a, button, li, span');
+    elementosAdmin.forEach(elemento => {
+      if (elemento.textContent && 
+          (elemento.textContent.toLowerCase().includes('panel admin') ||
+           elemento.textContent.toLowerCase().includes('panel de admin') ||
+           elemento.textContent.toLowerCase().includes('administrador') ||
+           elemento.textContent.toLowerCase().includes('panel de administrador'))) {
+        elemento.style.display = 'none';
+      }
+    });
+    
+    // Ocultar enlaces a páginas administrativas por href
+    const enlacesAdmin = iframeDoc.querySelectorAll('a[href*="admin"], a[href*="vendedor"], a[href*="panel"]');
+    enlacesAdmin.forEach(enlace => {
+      // Solo ocultar si no es un enlace normal (como "panel de control" en contexto regular)
+      if (enlace.href.includes('admin.html') || 
+          enlace.href.includes('vendedor.html') ||
+          enlace.textContent.toLowerCase().includes('panel')) {
+        enlace.style.display = 'none';
+        // Si está dentro de un li, ocultar el li también
+        const parentLi = enlace.closest('li');
+        if (parentLi) {
+          parentLi.style.display = 'none';
+        }
+      }
+    });
+    
+    // Buscar elementos en dropdowns específicamente
+    const dropdownItems = iframeDoc.querySelectorAll('.dropdown-item, .nav-item, .menu-item');
+    dropdownItems.forEach(item => {
+      if (item.textContent && 
+          (item.textContent.toLowerCase().includes('panel vendedor') ||
+           item.textContent.toLowerCase().includes('panel admin') ||
+           item.textContent.toLowerCase().includes('administrador'))) {
+        item.style.display = 'none';
+      }
+    });
+    
+    console.log('🔒 Elementos administrativos ocultados en la vista previa');
+  } catch (error) {
+    console.warn('⚠️ Error al ocultar elementos administrativos:', error);
+  }
+}
+
+// Inyectar script para desactivar botones (método alternativo)
+function inyectarScriptDesactivacion() {
+  const iframe = document.getElementById('preview-iframe');
+  
+  if (iframe) {
+    // Script que se ejecutará dentro del iframe
+    const scriptContent = `
+      (function() {
+        function desactivarLogout() {
+          // Buscar botones de logout
+          const botonesLogout = document.querySelectorAll('button[onclick*="logout"], a[onclick*="logout"], [href*="logout"]');
+          
+          botonesLogout.forEach(boton => {
+            boton.disabled = true;
+            boton.style.opacity = '0.5';
+            boton.style.cursor = 'not-allowed';
+            boton.title = 'Función deshabilitada en vista previa';
+            
+            boton.onclick = function(e) {
+              e.preventDefault();
+              alert('La función de cerrar sesión está deshabilitada en la vista previa.');
+              return false;
+            };
+          });
+          
+          // Buscar por texto
+          const todosBotones = document.querySelectorAll('button, a');
+          todosBotones.forEach(boton => {
+            if (boton.textContent && boton.textContent.toLowerCase().includes('cerrar sesión')) {
+              boton.disabled = true;
+              boton.style.opacity = '0.5';
+              boton.style.cursor = 'not-allowed';
+              boton.title = 'Función deshabilitada en vista previa';
+              
+              boton.onclick = function(e) {
+                e.preventDefault();
+                alert('La función de cerrar sesión está deshabilitada en la vista previa.');
+                return false;
+              };
+            }
+          });
+          
+          // Ocultar elementos administrativos
+          function ocultarElementosAdmin() {
+            // Buscar y ocultar "Panel Vendedor"
+            const elementosVendedor = document.querySelectorAll('a, button, li');
+            elementosVendedor.forEach(elemento => {
+              if (elemento.textContent && 
+                  (elemento.textContent.toLowerCase().includes('panel vendedor') ||
+                   elemento.textContent.toLowerCase().includes('panel de vendedor') ||
+                   elemento.textContent.toLowerCase().includes('vendedor') && elemento.textContent.toLowerCase().includes('panel'))) {
+                elemento.style.display = 'none';
+              }
+            });
+            
+            // Buscar y ocultar "Panel Admin" o "Administrador"
+            const elementosAdmin = document.querySelectorAll('a, button, li');
+            elementosAdmin.forEach(elemento => {
+              if (elemento.textContent && 
+                  (elemento.textContent.toLowerCase().includes('panel admin') ||
+                   elemento.textContent.toLowerCase().includes('panel de admin') ||
+                   elemento.textContent.toLowerCase().includes('administrador') ||
+                   elemento.textContent.toLowerCase().includes('panel de administrador'))) {
+                elemento.style.display = 'none';
+              }
+            });
+            
+            // Ocultar enlaces a páginas administrativas
+            const enlacesAdmin = document.querySelectorAll('a[href*="admin"], a[href*="vendedor"], a[href*="panel"]');
+            enlacesAdmin.forEach(enlace => {
+              enlace.style.display = 'none';
+            });
+          }
+          
+          ocultarElementosAdmin();
+        }
+        
+        // Ejecutar cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', desactivarLogout);
+        } else {
+          desactivarLogout();
+        }
+        
+        // También ejecutar después de un pequeño delay para capturar elementos dinámicos
+        setTimeout(desactivarLogout, 500);
+      })();
+    `;
+    
+    try {
+      // Intentar inyectar el script
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+      if (iframeDoc) {
+        const script = iframeDoc.createElement('script');
+        script.textContent = scriptContent;
+        iframeDoc.head.appendChild(script);
+      }
+    } catch (error) {
+      console.warn('⚠️ No se pudo inyectar script de desactivación:', error);
+    }
+  }
+}
+
+// Cambiar página en la vista previa
+function cambiarPaginaPrevia(pagina) {
+  const iframe = document.getElementById('preview-iframe');
+  const container = document.querySelector('.preview-container');
+  
+  if (iframe && container) {
+    // Mostrar indicador de carga
+    container.classList.add('loading');
+    
+    // Cambiar la página
+    iframe.src = pagina;
+    
+    // Remover indicador de carga cuando termine de cargar
+    iframe.onload = function() {
+      container.classList.remove('loading');
+      
+      // Desactivar botones de cerrar sesión después de cargar
+      setTimeout(() => {
+        desactivarCerrarSesionEnIframe();
+      }, 100);
+      
+      // Ejecutar múltiples veces para capturar elementos que se cargan dinámicamente
+      setTimeout(() => {
+        desactivarCerrarSesionEnIframe();
+      }, 500);
+      
+      setTimeout(() => {
+        desactivarCerrarSesionEnIframe();
+      }, 1000);
+      
+      console.log(`📄 Vista previa cargada: ${pagina}`);
+    };
+    
+    // Manejar errores de carga
+    iframe.onerror = function() {
+      container.classList.remove('loading');
+      console.error(`❌ Error al cargar: ${pagina}`);
+      alert(`No se pudo cargar la página: ${pagina}`);
+    };
+    
+    console.log(`📄 Cambiando vista previa a: ${pagina}`);
+  }
+}
+
+// Cerrar vista previa y volver al panel de usuarios
+function cerrarVistaPrevia() {
+  // Cambiar a la pestaña de usuarios
+  const usuariosTab = document.getElementById('usuarios-tab');
+  const usuariosContent = document.getElementById('usuarios');
+  const vistaPreviaContent = document.getElementById('vista-previa');
+  
+  if (usuariosTab && usuariosContent && vistaPreviaContent) {
+    // Remover clases activas de vista previa
+    const vistaPreviaTab = document.getElementById('vista-previa-tab');
+    if (vistaPreviaTab) {
+      vistaPreviaTab.classList.remove('active');
+    }
+    vistaPreviaContent.classList.remove('show', 'active');
+    
+    // Activar pestaña de usuarios
+    usuariosTab.classList.add('active');
+    usuariosContent.classList.add('show', 'active');
+    
+    console.log('🔙 Regresando al panel de administración');
+  }
+}
+
+// Función para ajustar el iframe en dispositivos móviles
+function ajustarVistaPrevia() {
+  const iframe = document.getElementById('preview-iframe');
+  const container = document.querySelector('.preview-container');
+  
+  if (iframe && container) {
+    // En dispositivos móviles, ajustar altura
+    if (window.innerWidth <= 768) {
+      container.style.height = '60vh';
+    } else {
+      container.style.height = '70vh';
+    }
+  }
+}
+
+// ====================================
 // INICIALIZACIÓN
 // ====================================
 document.addEventListener('DOMContentLoaded', () => {
   cargarUsuarios();
   cargarProductos();
+  
+  // Ajustar vista previa en redimensionamiento
+  window.addEventListener('resize', ajustarVistaPrevia);
+  
+  // Configurar vista previa inicial
+  const iframe = document.getElementById('preview-iframe');
+  if (iframe) {
+    // Desactivar logout cuando se carga la página inicial del iframe
+    iframe.onload = function() {
+      setTimeout(() => {
+        desactivarCerrarSesionEnIframe();
+      }, 100);
+    };
+    
+    // Activar cuando se cambia a la pestaña de vista previa
+    const vistaPreviaTab = document.getElementById('vista-previa-tab');
+    if (vistaPreviaTab) {
+      vistaPreviaTab.addEventListener('shown.bs.tab', function() {
+        setTimeout(() => {
+          desactivarCerrarSesionEnIframe();
+        }, 200);
+      });
+    }
+  }
   
   // DEPURACIÓN: Función para verificar productos en localStorage
   window.verificarProductos = function() {
