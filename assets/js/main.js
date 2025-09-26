@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Ctrl + Shift + D = Debug/Estado del sistema  
+        // Ctrl + Shift + D = Depuración/Estado del sistema  
         if (e.ctrlKey && e.shiftKey && e.key === 'D') {
             e.preventDefault();
             mostrarEstadoSistema();
@@ -312,7 +312,7 @@ function inicializarDatosPorDefecto() {
     }
 }
 
-// FUNCIONES DE TESTING Y DEBUG
+// FUNCIONES DE PRUEBAS Y DEPURACIÓN
 
 // Función para resetear completamente el sistema a estado por defecto
 function resetearSistema() {
@@ -402,6 +402,6 @@ console.log('mostrarEstadoSistema() - Muestra estado actual');
 console.log('');
 console.log('ATAJOS DE TECLADO:');
 console.log('Ctrl+Shift+R - Reset completo del sistema');
-console.log('Ctrl+Shift+D - Ver estado/debug del sistema'); 
+console.log('Ctrl+Shift+D - Ver estado/depuración del sistema'); 
 console.log('====================================');
 

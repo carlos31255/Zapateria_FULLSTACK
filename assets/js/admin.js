@@ -300,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
   cargarUsuarios();
   cargarProductos();
   
-  // DEBUG: Función para verificar productos en localStorage
+  // DEPURACIÓN: Función para verificar productos en localStorage
   window.verificarProductos = function() {
     const productos = JSON.parse(localStorage.getItem('productos')) || [];
     console.log('📦 Productos en localStorage:');
@@ -310,5 +310,5 @@ document.addEventListener('DOMContentLoaded', () => {
     return productos;
   };
   
-  console.log('🔧 Panel de administración cargado. Usa verificarProductos() para debug.');
+  console.log('🔧 Panel de administración cargado. Usa verificarProductos() para depuración.');
 });

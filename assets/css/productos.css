@@ -102,7 +102,7 @@
     font-family: inherit;
 }
 
-/* Responsive design */
+/* Diseño responsivo */
 @media (max-width: 768px) {
     .filters-section {
         flex-direction: column;

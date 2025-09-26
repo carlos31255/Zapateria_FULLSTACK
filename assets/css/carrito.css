@@ -167,7 +167,7 @@
     background-color: #218838;
 }
 
-/* Responsive adjustments */
+/* Ajustes responsivos */
 @media (max-width: 768px) {
     .item-info {
         flex-direction: column;
